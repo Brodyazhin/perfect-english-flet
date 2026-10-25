@@ -9,4 +9,5 @@ def main(page: ft.Page):
         ft.Text("Если ты видишь это на телефоне — сборка прошла успешно.", size=16),
     )
 
-ft.app(target=main)
+# Исправленная строка запуска для Flet 1.0+
+ft.run(main)
