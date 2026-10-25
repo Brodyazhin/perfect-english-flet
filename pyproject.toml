@@ -1,0 +1,10 @@
+[project]
+name = "perfect-english-mobile"
+version = "1.0.0"
+description = "Perfect English Mobile App"
+requires-python = ">=3.9"
+
+[tool.flet]
+product = "Perfect English"
+org = "com.perfectenglish"
+bundle_id = "com.perfectenglish.app"
