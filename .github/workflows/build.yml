@@ -29,9 +29,17 @@ jobs:
           bundled-python-version: "3.12"
           build-number: "1"
 
+      # --- НОВЫЙ ШАГ: Ищем APK и собираем их в одну папку ---
+      - name: Collect APKs
+        run: |
+          mkdir -p final_apks
+          find . -name "*.apk" -type f -exec cp {} final_apks/ \;
+          echo "Найдено APK файлов:"
+          ls -la final_apks/
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: perfect-english-apk
-          path: build/app/outputs/**/*.apk
+          path: final_apks/*.apk
           if-no-files-found: error
