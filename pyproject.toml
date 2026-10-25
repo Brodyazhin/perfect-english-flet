@@ -4,6 +4,11 @@ version = "1.0.0"
 description = "Perfect English Mobile App"
 requires-python = ">=3.12,<3.13"
 
+# Явно указываем версию Flet для сборки
+dependencies = [
+    "flet==1.0.5",
+]
+
 [tool.flet]
 product = "Perfect English"
 org = "com.perfectenglish"
