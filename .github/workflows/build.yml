@@ -21,6 +21,11 @@ jobs:
         run: |
           flet --version
 
+      # Очищаем кэш, чтобы Flet не использовал битые файлы
+      - name: Clear Flet Cache
+        run: |
+          rm -rf ~/.flet/cache
+
       - name: Build APK
         uses: flet-dev/flet-build-action@v1
         with:
@@ -29,7 +34,7 @@ jobs:
           bundled-python-version: "3.12"
           build-number: "1"
 
-      # --- НОВЫЙ ШАГ: Ищем APK и собираем их в одну папку ---
+      # Собираем все APK в одну папку (на случай, если Flet сохранит его не туда)
       - name: Collect APKs
         run: |
           mkdir -p final_apks
