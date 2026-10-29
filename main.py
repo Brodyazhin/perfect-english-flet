@@ -1,5 +1,5 @@
 import flet as ft
-from data import DATA, count_words, all_words_flat
+from data import DATA, count_words
 from subscription import state, TIERS
 
 def main(page: ft.Page):
@@ -7,7 +7,6 @@ def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 0
     
-    # --- Вспомогательные функции ---
     def navigate(route):
         page.views.clear()
         if route == "/":
@@ -18,11 +17,10 @@ def main(page: ft.Page):
             page.views.append(flashcards_view())
         page.update()
 
-    # --- ЭКРАН 1: Главное меню ---
+    # --- Главное меню ---
     def home_view():
         tier = TIERS[state.license["tier"]]
         
-        # Карточки разделов
         section_cards = []
         for name, item in DATA.items():
             section_cards.append(
@@ -42,7 +40,6 @@ def main(page: ft.Page):
             )
 
         return ft.View(
-            # УБРАНА СТРОКА "/"
             controls=[
                 ft.Container(
                     content=ft.Column([
@@ -89,9 +86,12 @@ def main(page: ft.Page):
             )
 
         return ft.View(
-            # УБРАНА СТРОКА "/section"
             controls=[
-                ft.AppBar(title=ft.Text(name), bgcolor=ft.Colors.BLUE_100, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
+                ft.AppBar(
+                    title=ft.Text(name), 
+                    bgcolor=ft.Colors.BLUE_100, 
+                    leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))
+                ),
                 ft.Container(
                     content=ft.Column([
                         ft.Text("Выбери тему", size=16, color=ft.Colors.GREY_600),
@@ -102,7 +102,7 @@ def main(page: ft.Page):
             ]
         )
 
-    # --- ЭКРАН 3: Карточки ---
+    # --- Карточки ---
     current_cards_data = {"words": [], "index": 0, "title": ""}
     
     def open_flashcards(title, sub_item):
@@ -121,10 +121,12 @@ def main(page: ft.Page):
         
         if not state.can_see_more():
             return ft.View(
-                # УБРАНА СТРОКА "/flashcards"
                 controls=[
                     ft.Text("Дневной лимит исчерпан!", size=20, color=ft.Colors.RED),
-                    ft.ElevatedButton("Назад", on_click=lambda e: navigate("/section"))
+                    ft.Button(
+                        content="Назад",
+                        on_click=lambda e: navigate("/section")
+                    )
                 ]
             )
 
@@ -140,19 +142,37 @@ def main(page: ft.Page):
             next_word(e)
 
         return ft.View(
-            # УБРАНА СТРОКА "/flashcards"
             controls=[
-                ft.AppBar(title=ft.Text(current_cards_data["title"]), bgcolor=ft.Colors.GREEN_100, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/section"))),
+                ft.AppBar(
+                    title=ft.Text(current_cards_data["title"]),
+                    bgcolor=ft.Colors.GREEN_100,
+                    leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/section"))
+                ),
                 ft.Container(
                     content=ft.Column([
                         ft.Container(height=50),
                         ft.Text(word["en"], size=40, weight=ft.FontWeight.BOLD),
                         ft.Text(f"[{word['ipa']}]", size=18, color=ft.Colors.BLUE, italic=True),
                         ft.Divider(height=50, color=ft.Colors.TRANSPARENT),
-                        ft.ElevatedButton("Показать перевод", on_click=lambda e: page.show_dialog(ft.AlertDialog(title=ft.Text("Перевод"), content=ft.Text(word["ru"])))),
+                        ft.Button(
+                            content="Показать перевод",
+                            on_click=lambda e: page.show_dialog(
+                                ft.AlertDialog(title=ft.Text("Перевод"), content=ft.Text(word["ru"]))
+                            )
+                        ),
                         ft.Row([
-                            ft.ElevatedButton("✅ Знаю", on_click=mark_known, bgcolor=ft.Colors.GREEN_400, color=ft.Colors.WHITE),
-                            ft.ElevatedButton("Следующее →", on_click=next_word, bgcolor=ft.Colors.BLUE_400, color=ft.Colors.WHITE)
+                            ft.Button(
+                                content="✅ Знаю",
+                                on_click=mark_known,
+                                bgcolor=ft.Colors.GREEN_400,
+                                color=ft.Colors.WHITE
+                            ),
+                            ft.Button(
+                                content="Следующее →",
+                                on_click=next_word,
+                                bgcolor=ft.Colors.BLUE_400,
+                                color=ft.Colors.WHITE
+                            )
                         ], alignment=ft.MainAxisAlignment.CENTER, spacing=20)
                     ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                     expand=True,
