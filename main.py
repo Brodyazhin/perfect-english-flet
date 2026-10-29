@@ -1,4 +1,3 @@
-# main.py
 import flet as ft
 from data import DATA, count_words, all_words_flat
 from subscription import state, TIERS
@@ -36,7 +35,7 @@ def main(page: ft.Page):
                     ),
                     bgcolor=ft.Colors.WHITE,
                     border_radius=15,
-                    margin=ft.margin.only(bottom=10),
+                    margin=10, # <-- ИСПРАВЛЕНО (просто число)
                     shadow=ft.BoxShadow(blur_radius=10, color=ft.Colors.with_opacity(0.05, ft.Colors.BLACK)),
                     on_click=lambda e, n=name: open_section(n)
                 )
@@ -84,7 +83,7 @@ def main(page: ft.Page):
                     ),
                     bgcolor=ft.Colors.WHITE,
                     border_radius=10,
-                    margin=ft.margin.only(bottom=8),
+                    margin=8, # <-- ИСПРАВЛЕНО
                     on_click=lambda e, n=sub_name, i=sub_item: open_flashcards(n, i)
                 )
             )
@@ -107,7 +106,6 @@ def main(page: ft.Page):
     current_cards_data = {"words": [], "index": 0, "title": ""}
     
     def open_flashcards(title, sub_item):
-        # Пока берем только слова (без вложенных subsections)
         words = sub_item.get("words", [])
         if not words: return
         current_cards_data["words"] = words
@@ -121,7 +119,6 @@ def main(page: ft.Page):
 
         word = current_cards_data["words"][current_cards_data["index"]]
         
-        # Проверка лимита
         if not state.can_see_more():
             return ft.View("/flashcards", controls=[
                 ft.Text("Дневной лимит исчерпан!", size=20, color=ft.Colors.RED),
@@ -161,7 +158,6 @@ def main(page: ft.Page):
             ]
         )
 
-    # Запуск
     navigate("/")
 
 ft.run(main)
