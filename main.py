@@ -4,8 +4,15 @@ from subscription import state, TIERS
 
 def main(page: ft.Page):
     page.title = "Perfect English"
-    page.theme_mode = ft.ThemeMode.LIGHT
+    page.theme_mode = ft.ThemeMode.LIGHT  # Начинаем со светлой темы
     page.padding = 0
+    
+    def toggle_theme(e):
+        if page.theme_mode == ft.ThemeMode.LIGHT:
+            page.theme_mode = ft.ThemeMode.DARK
+        else:
+            page.theme_mode = ft.ThemeMode.LIGHT
+        page.update()
     
     def navigate(route):
         page.views.clear()
@@ -45,7 +52,7 @@ def main(page: ft.Page):
                         subtitle=ft.Text(item["desc"]),
                         trailing=ft.Icon(ft.Icons.ARROW_FORWARD_IOS),
                     ),
-                    bgcolor=ft.Colors.WHITE,
+                    bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, # Адаптивный цвет под тему
                     border_radius=15,
                     margin=10,
                     shadow=ft.BoxShadow(blur_radius=10, color=ft.Colors.with_opacity(0.05, ft.Colors.BLACK)),
@@ -55,10 +62,17 @@ def main(page: ft.Page):
 
         return ft.View(
             controls=[
+                ft.AppBar(
+                    title=ft.Text("Perfect English"), 
+                    bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
+                    actions=[
+                        ft.IconButton(ft.Icons.BRIGHTNESS_6, on_click=toggle_theme)
+                    ]
+                ),
                 ft.Container(
                     content=ft.Column([
                         ft.Text("🎓", size=60),
-                        ft.Text("Perfect English", size=28, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                        ft.Text("Perfect English", size=28, weight=ft.FontWeight.BOLD),
                         ft.Text(f"{tier['icon']} {tier['name']}", color=ft.Colors.ORANGE),
                         ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                         quick_actions,
@@ -73,7 +87,6 @@ def main(page: ft.Page):
                         ft.Column(section_cards, spacing=0)
                     ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                     padding=30,
-                    bgcolor=ft.Colors.GREY_50,
                     expand=True
                 )
             ]
@@ -100,7 +113,7 @@ def main(page: ft.Page):
                         subtitle=ft.Text(f"{count_words(sub_item)} слов"),
                         trailing=ft.Icon(ft.Icons.PLAY_ARROW),
                     ),
-                    bgcolor=ft.Colors.WHITE,
+                    bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
                     border_radius=10,
                     margin=8,
                     on_click=lambda e, n=sub_name, i=sub_item: open_flashcards(n, i)
@@ -111,15 +124,16 @@ def main(page: ft.Page):
             controls=[
                 ft.AppBar(
                     title=ft.Text(name), 
-                    bgcolor=ft.Colors.BLUE_100, 
+                    bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, 
                     leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))
                 ),
                 ft.Container(
                     content=ft.Column([
                         ft.Text("Выбери тему", size=16, color=ft.Colors.GREY_600),
                         ft.Column(subs, spacing=0)
-                    ]),
-                    padding=20
+                    ], scroll=ft.ScrollMode.AUTO), # Скролл для тем
+                    padding=20,
+                    expand=True
                 )
             ]
         )
@@ -128,7 +142,13 @@ def main(page: ft.Page):
     current_cards_data = {"words": [], "index": 0, "title": ""}
     
     def open_flashcards(title, sub_item):
+        # Рекурсивно собираем все слова, если есть подразделы
         words = sub_item.get("words", [])
+        if "subsections" in sub_item:
+            words = []
+            for s in sub_item["subsections"].values():
+                words.extend(s.get("words", []))
+                
         if not words: return
         current_cards_data["words"] = words
         current_cards_data["index"] = 0
@@ -164,13 +184,13 @@ def main(page: ft.Page):
             controls=[
                 ft.AppBar(
                     title=ft.Text(current_cards_data["title"]),
-                    bgcolor=ft.Colors.GREEN_100,
+                    bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
                     leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/section"))
                 ),
                 ft.Container(
                     content=ft.Column([
                         ft.Container(height=50),
-                        ft.Text(word["en"], size=40, weight=ft.FontWeight.BOLD),
+                        ft.Text(word["en"], size=40, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER),
                         ft.Text(f"[{word['ipa']}]", size=18, color=ft.Colors.BLUE, italic=True),
                         ft.Divider(height=50, color=ft.Colors.TRANSPARENT),
                         ft.Row([
@@ -183,7 +203,7 @@ def main(page: ft.Page):
                             ft.Button(content="✅ Знаю", on_click=mark_known, bgcolor=ft.Colors.GREEN_400, color=ft.Colors.WHITE),
                             ft.Button(content="Следующее →", on_click=next_word, bgcolor=ft.Colors.BLUE_400, color=ft.Colors.WHITE)
                         ], alignment=ft.MainAxisAlignment.CENTER, spacing=20)
-                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, scroll=ft.ScrollMode.AUTO), # Скролл для карточек
                     expand=True,
                     padding=20
                 )
@@ -215,13 +235,14 @@ def main(page: ft.Page):
 
         return ft.View(
             controls=[
-                ft.AppBar(title=ft.Text("Поиск"), bgcolor=ft.Colors.BLUE_100, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
+                ft.AppBar(title=ft.Text("Поиск"), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
                 ft.Container(
                     content=ft.Column([
                         ft.TextField(hint_text="Введите слово...", on_change=on_search, prefix_icon=ft.Icons.SEARCH),
                         results_list
-                    ]),
-                    padding=20
+                    ], scroll=ft.ScrollMode.AUTO), # Скролл для поиска
+                    padding=20,
+                    expand=True
                 )
             ]
         )
@@ -244,8 +265,8 @@ def main(page: ft.Page):
                 
         return ft.View(
             controls=[
-                ft.AppBar(title=ft.Text("Избранное"), bgcolor=ft.Colors.RED_100, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
-                ft.Column(items, scroll=ft.ScrollMode.AUTO, expand=True)
+                ft.AppBar(title=ft.Text("Избранное"), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
+                ft.Column(items, scroll=ft.ScrollMode.AUTO, expand=True) # Скролл для избранного
             ]
         )
 
@@ -257,14 +278,15 @@ def main(page: ft.Page):
         
         return ft.View(
             controls=[
-                ft.AppBar(title=ft.Text("Статистика"), bgcolor=ft.Colors.GREEN_100, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
+                ft.AppBar(title=ft.Text("Статистика"), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
                 ft.Container(
                     content=ft.Column([
                         ft.ListTile(leading=ft.Text("🔥", size=30), title=ft.Text("Серия дней", weight=ft.FontWeight.BOLD), subtitle=ft.Text(f"{streak} дн.")),
                         ft.ListTile(leading=ft.Text("📖", size=30), title=ft.Text("Изучено слов", weight=ft.FontWeight.BOLD), subtitle=ft.Text(f"{known_count} из {total_count}")),
                         ft.ListTile(leading=ft.Text("⭐", size=30), title=ft.Text("В избранном", weight=ft.FontWeight.BOLD), subtitle=ft.Text(str(len(state.progress["favorites"])))),
-                    ]),
-                    padding=20
+                    ], scroll=ft.ScrollMode.AUTO), # Скролл для статистики
+                    padding=20,
+                    expand=True
                 )
             ]
         )
@@ -275,9 +297,7 @@ def main(page: ft.Page):
         
         def make_card(name, tier_id, price, features):
             is_current = (tier_id == current_tier)
-            
-            # Меняем цвет фона для текущего тарифа вместо рамки
-            card_bgcolor = ft.Colors.BLUE_50 if is_current else ft.Colors.WHITE
+            card_bgcolor = ft.Colors.BLUE_50 if is_current else ft.Colors.SURFACE_CONTAINER_HIGHEST
             
             return ft.Container(
                 content=ft.Column([
@@ -300,12 +320,12 @@ def main(page: ft.Page):
 
         return ft.View(
             controls=[
-                ft.AppBar(title=ft.Text("Подписка"), bgcolor=ft.Colors.ORANGE_100, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
+                ft.AppBar(title=ft.Text("Подписка"), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
                 ft.Column([
                     make_card("Бесплатный", "free", 0, ["30 слов в день", "Базовый раздел"]),
                     make_card("Плюс", "plus", 199, ["500 слов в день", "Все разделы", "Тесты"]),
                     make_card("Премиум", "premium", 499, ["Безлимит", "Экспорт прогресса", "Приоритетная поддержка"]),
-                ], scroll=ft.ScrollMode.AUTO)
+                ], scroll=ft.ScrollMode.AUTO, expand=True) # Скролл для подписки
             ]
         )
 
