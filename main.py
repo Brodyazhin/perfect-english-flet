@@ -1,4 +1,5 @@
 import flet as ft
+from flet_tts import Tts
 from data import DATA, count_words, all_words_flat
 from subscription import state, TIERS
 
@@ -6,6 +7,10 @@ def main(page: ft.Page):
     page.title = "Perfect English"
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 0
+    
+    # Инициализация озвучки
+    tts = Tts()
+    page.overlay.append(tts)
     
     def navigate(route):
         page.views.clear()
@@ -21,20 +26,20 @@ def main(page: ft.Page):
             page.views.append(favorites_view())
         elif route == "/stats":
             page.views.append(stats_view())
+        elif route == "/subscription":
+            page.views.append(subscription_view())
         page.update()
 
     # --- ЭКРАН 1: Главное меню ---
     def home_view():
         tier = TIERS[state.license["tier"]]
         
-        # Быстрые кнопки (Поиск, Избранное, Статистика)
         quick_actions = ft.Row([
             ft.IconButton(ft.Icons.SEARCH, icon_color=ft.Colors.BLUE, on_click=lambda e: navigate("/search")),
             ft.IconButton(ft.Icons.FAVORITE, icon_color=ft.Colors.RED, on_click=lambda e: navigate("/favorites")),
             ft.IconButton(ft.Icons.BAR_CHART, icon_color=ft.Colors.GREEN, on_click=lambda e: navigate("/stats")),
         ], alignment=ft.MainAxisAlignment.CENTER, spacing=30)
 
-        # Карточки разделов
         section_cards = []
         for name, item in DATA.items():
             section_cards.append(
@@ -62,6 +67,12 @@ def main(page: ft.Page):
                         ft.Text(f"{tier['icon']} {tier['name']}", color=ft.Colors.ORANGE),
                         ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                         quick_actions,
+                        ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+                        ft.Button(
+                            content=ft.Row([ft.Icon(ft.Icons.DIAMOND), ft.Text("Управление подпиской")]),
+                            on_click=lambda e: navigate("/subscription"),
+                            bgcolor=ft.Colors.ORANGE_100,
+                        ),
                         ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                         ft.Text("📚 Разделы", size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_700),
                         ft.Column(section_cards, spacing=0)
@@ -154,6 +165,9 @@ def main(page: ft.Page):
                 state.save_progress()
             next_word(e)
 
+        def speak(e):
+            tts.speak(word["en"])
+
         return ft.View(
             controls=[
                 ft.AppBar(
@@ -167,12 +181,13 @@ def main(page: ft.Page):
                         ft.Text(word["en"], size=40, weight=ft.FontWeight.BOLD),
                         ft.Text(f"[{word['ipa']}]", size=18, color=ft.Colors.BLUE, italic=True),
                         ft.Divider(height=50, color=ft.Colors.TRANSPARENT),
-                        ft.Button(
-                            content="Показать перевод",
-                            on_click=lambda e: page.show_dialog(
+                        ft.Row([
+                            ft.Button(content="👁 Перевод", on_click=lambda e: page.show_dialog(
                                 ft.AlertDialog(title=ft.Text("Перевод"), content=ft.Text(word["ru"]))
-                            )
-                        ),
+                            )),
+                            ft.Button(content="🔊 Озвучить", on_click=speak, bgcolor=ft.Colors.BLUE_200),
+                        ], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
+                        ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
                         ft.Row([
                             ft.Button(content="✅ Знаю", on_click=mark_known, bgcolor=ft.Colors.GREEN_400, color=ft.Colors.WHITE),
                             ft.Button(content="Следующее →", on_click=next_word, bgcolor=ft.Colors.BLUE_400, color=ft.Colors.WHITE)
@@ -260,6 +275,43 @@ def main(page: ft.Page):
                     ]),
                     padding=20
                 )
+            ]
+        )
+
+    # --- НОВЫЙ ЭКРАН: Подписка ---
+    def subscription_view():
+        current_tier = state.license["tier"]
+        
+        def make_card(name, tier_id, price, features):
+            is_current = (tier_id == current_tier)
+            return ft.Container(
+                content=ft.Column([
+                    ft.Text(f"{TIERS[tier_id]['icon']} {name}", size=20, weight=ft.FontWeight.BOLD),
+                    ft.Text(f"{price} ₽/мес" if price > 0 else "Бесплатно", size=24, color=ft.Colors.BLUE),
+                    ft.Column([ft.Text(f"✅ {f}") for f in features]),
+                    ft.ElevatedButton(
+                        content="Текущий план" if is_current else "Оформить",
+                        disabled=is_current,
+                        on_click=lambda e, t=tier_id: page.show_dialog(
+                            ft.AlertDialog(title=ft.Text("Оплата"), content=ft.Text("Здесь будет подключена ЮKassa."))
+                        )
+                    )
+                ]),
+                bgcolor=ft.Colors.WHITE,
+                border_radius=15,
+                padding=20,
+                margin=10,
+                border=ft.border.all(2, ft.Colors.BLUE) if is_current else None,
+            )
+
+        return ft.View(
+            controls=[
+                ft.AppBar(title=ft.Text("Подписка"), bgcolor=ft.Colors.ORANGE_100, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
+                ft.Column([
+                    make_card("Бесплатный", "free", 0, ["30 слов в день", "Базовый раздел"]),
+                    make_card("Плюс", "plus", 199, ["500 слов в день", "Все разделы", "Тесты"]),
+                    make_card("Премиум", "premium", 499, ["Безлимит", "Экспорт прогресса", "Приоритетная поддержка"]),
+                ], scroll=ft.ScrollMode.AUTO)
             ]
         )
 
