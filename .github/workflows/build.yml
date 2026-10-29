@@ -13,6 +13,15 @@ jobs:
         with:
           enable-cache: true
 
+      # Устанавливаем flet-cli через uv, чтобы команда 'flet' была доступна
+      - name: Install Flet CLI
+        run: |
+          uv pip install flet-cli
+
+      - name: Verify Flet
+        run: |
+          flet --version
+
       - name: Build APK
         uses: flet-dev/flet-build-action@v1
         with:
