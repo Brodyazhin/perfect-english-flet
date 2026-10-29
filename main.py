@@ -35,14 +35,14 @@ def main(page: ft.Page):
                     ),
                     bgcolor=ft.Colors.WHITE,
                     border_radius=15,
-                    margin=10, # <-- ИСПРАВЛЕНО (просто число)
+                    margin=10,
                     shadow=ft.BoxShadow(blur_radius=10, color=ft.Colors.with_opacity(0.05, ft.Colors.BLACK)),
                     on_click=lambda e, n=name: open_section(n)
                 )
             )
 
         return ft.View(
-            "/",
+            # УБРАНА СТРОКА "/"
             controls=[
                 ft.Container(
                     content=ft.Column([
@@ -83,13 +83,13 @@ def main(page: ft.Page):
                     ),
                     bgcolor=ft.Colors.WHITE,
                     border_radius=10,
-                    margin=8, # <-- ИСПРАВЛЕНО
+                    margin=8,
                     on_click=lambda e, n=sub_name, i=sub_item: open_flashcards(n, i)
                 )
             )
 
         return ft.View(
-            "/section",
+            # УБРАНА СТРОКА "/section"
             controls=[
                 ft.AppBar(title=ft.Text(name), bgcolor=ft.Colors.BLUE_100, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
                 ft.Container(
@@ -115,15 +115,18 @@ def main(page: ft.Page):
 
     def flashcards_view():
         if not current_cards_data["words"]:
-            return ft.View("/flashcards", controls=[ft.Text("Нет слов")])
+            return ft.View(controls=[ft.Text("Нет слов")])
 
         word = current_cards_data["words"][current_cards_data["index"]]
         
         if not state.can_see_more():
-            return ft.View("/flashcards", controls=[
-                ft.Text("Дневной лимит исчерпан!", size=20, color=ft.Colors.RED),
-                ft.ElevatedButton("Назад", on_click=lambda e: navigate("/section"))
-            ])
+            return ft.View(
+                # УБРАНА СТРОКА "/flashcards"
+                controls=[
+                    ft.Text("Дневной лимит исчерпан!", size=20, color=ft.Colors.RED),
+                    ft.ElevatedButton("Назад", on_click=lambda e: navigate("/section"))
+                ]
+            )
 
         def next_word(e):
             current_cards_data["index"] = (current_cards_data["index"] + 1) % len(current_cards_data["words"])
@@ -137,7 +140,7 @@ def main(page: ft.Page):
             next_word(e)
 
         return ft.View(
-            "/flashcards",
+            # УБРАНА СТРОКА "/flashcards"
             controls=[
                 ft.AppBar(title=ft.Text(current_cards_data["title"]), bgcolor=ft.Colors.GREEN_100, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/section"))),
                 ft.Container(
