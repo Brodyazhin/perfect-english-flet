@@ -275,6 +275,10 @@ def main(page: ft.Page):
         
         def make_card(name, tier_id, price, features):
             is_current = (tier_id == current_tier)
+            
+            # Меняем цвет фона для текущего тарифа вместо рамки
+            card_bgcolor = ft.Colors.BLUE_50 if is_current else ft.Colors.WHITE
+            
             return ft.Container(
                 content=ft.Column([
                     ft.Text(f"{TIERS[tier_id]['icon']} {name}", size=20, weight=ft.FontWeight.BOLD),
@@ -288,11 +292,10 @@ def main(page: ft.Page):
                         )
                     )
                 ]),
-                bgcolor=ft.Colors.WHITE,
+                bgcolor=card_bgcolor,
                 border_radius=15,
                 padding=20,
                 margin=10,
-                border=ft.border.all(2, ft.Colors.BLUE) if is_current else None,
             )
 
         return ft.View(
