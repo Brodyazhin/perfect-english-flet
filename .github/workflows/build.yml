@@ -8,23 +8,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: '3.12'
-
-      - name: Install Flet CLI
-        run: |
-          pip install flet-cli
-
-      - name: Verify Flet
-        run: |
-          flet --version
-
-      # Очищаем кэш, чтобы Flet не использовал битые файлы
-      - name: Clear Flet Cache
-        run: |
-          rm -rf ~/.flet/cache
+          enable-cache: true
 
       - name: Build APK
         uses: flet-dev/flet-build-action@v1
@@ -34,7 +21,6 @@ jobs:
           bundled-python-version: "3.12"
           build-number: "1"
 
-      # Собираем все APK в одну папку (на случай, если Flet сохранит его не туда)
       - name: Collect APKs
         run: |
           mkdir -p final_apks
