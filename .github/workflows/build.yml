@@ -13,13 +13,16 @@ jobs:
         with:
           enable-cache: true
 
-      # Устанавливаем flet-cli через uv, чтобы команда 'flet' была доступна
+      # Создаем виртуальное окружение и ставим flet-cli
       - name: Install Flet CLI
         run: |
+          uv venv
           uv pip install flet-cli
 
       - name: Verify Flet
         run: |
+          # Активируем окружение и проверяем версию
+          source .venv/bin/activate
           flet --version
 
       - name: Build APK
