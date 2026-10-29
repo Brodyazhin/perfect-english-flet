@@ -1,5 +1,4 @@
 import flet as ft
-from flet_tts import Tts
 from data import DATA, count_words, all_words_flat
 from subscription import state, TIERS
 
@@ -7,10 +6,6 @@ def main(page: ft.Page):
     page.title = "Perfect English"
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 0
-    
-    # Инициализация озвучки
-    tts = Tts()
-    page.overlay.append(tts)
     
     def navigate(route):
         page.views.clear()
@@ -165,9 +160,6 @@ def main(page: ft.Page):
                 state.save_progress()
             next_word(e)
 
-        def speak(e):
-            tts.speak(word["en"])
-
         return ft.View(
             controls=[
                 ft.AppBar(
@@ -185,7 +177,6 @@ def main(page: ft.Page):
                             ft.Button(content="👁 Перевод", on_click=lambda e: page.show_dialog(
                                 ft.AlertDialog(title=ft.Text("Перевод"), content=ft.Text(word["ru"]))
                             )),
-                            ft.Button(content="🔊 Озвучить", on_click=speak, bgcolor=ft.Colors.BLUE_200),
                         ], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
                         ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
                         ft.Row([
@@ -289,7 +280,7 @@ def main(page: ft.Page):
                     ft.Text(f"{TIERS[tier_id]['icon']} {name}", size=20, weight=ft.FontWeight.BOLD),
                     ft.Text(f"{price} ₽/мес" if price > 0 else "Бесплатно", size=24, color=ft.Colors.BLUE),
                     ft.Column([ft.Text(f"✅ {f}") for f in features]),
-                    ft.ElevatedButton(
+                    ft.Button(
                         content="Текущий план" if is_current else "Оформить",
                         disabled=is_current,
                         on_click=lambda e, t=tier_id: page.show_dialog(
