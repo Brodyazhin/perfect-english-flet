@@ -1,5 +1,5 @@
 import flet as ft
-from data import DATA, count_words
+from data import DATA, count_words, all_words_flat
 from subscription import state, TIERS
 
 def main(page: ft.Page):
@@ -15,12 +15,26 @@ def main(page: ft.Page):
             page.views.append(section_view())
         elif route == "/flashcards":
             page.views.append(flashcards_view())
+        elif route == "/search":
+            page.views.append(search_view())
+        elif route == "/favorites":
+            page.views.append(favorites_view())
+        elif route == "/stats":
+            page.views.append(stats_view())
         page.update()
 
-    # --- Главное меню ---
+    # --- ЭКРАН 1: Главное меню ---
     def home_view():
         tier = TIERS[state.license["tier"]]
         
+        # Быстрые кнопки (Поиск, Избранное, Статистика)
+        quick_actions = ft.Row([
+            ft.IconButton(ft.Icons.SEARCH, icon_color=ft.Colors.BLUE, on_click=lambda e: navigate("/search")),
+            ft.IconButton(ft.Icons.FAVORITE, icon_color=ft.Colors.RED, on_click=lambda e: navigate("/favorites")),
+            ft.IconButton(ft.Icons.BAR_CHART, icon_color=ft.Colors.GREEN, on_click=lambda e: navigate("/stats")),
+        ], alignment=ft.MainAxisAlignment.CENTER, spacing=30)
+
+        # Карточки разделов
         section_cards = []
         for name, item in DATA.items():
             section_cards.append(
@@ -46,7 +60,9 @@ def main(page: ft.Page):
                         ft.Text("🎓", size=60),
                         ft.Text("Perfect English", size=28, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
                         ft.Text(f"{tier['icon']} {tier['name']}", color=ft.Colors.ORANGE),
-                        ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
+                        ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+                        quick_actions,
+                        ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                         ft.Text("📚 Разделы", size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_700),
                         ft.Column(section_cards, spacing=0)
                     ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
@@ -102,7 +118,7 @@ def main(page: ft.Page):
             ]
         )
 
-    # --- Карточки ---
+    # --- ЭКРАН 3: Карточки ---
     current_cards_data = {"words": [], "index": 0, "title": ""}
     
     def open_flashcards(title, sub_item):
@@ -123,10 +139,7 @@ def main(page: ft.Page):
             return ft.View(
                 controls=[
                     ft.Text("Дневной лимит исчерпан!", size=20, color=ft.Colors.RED),
-                    ft.Button(
-                        content="Назад",
-                        on_click=lambda e: navigate("/section")
-                    )
+                    ft.Button(content="Назад", on_click=lambda e: navigate("/section"))
                 ]
             )
 
@@ -161,21 +174,90 @@ def main(page: ft.Page):
                             )
                         ),
                         ft.Row([
-                            ft.Button(
-                                content="✅ Знаю",
-                                on_click=mark_known,
-                                bgcolor=ft.Colors.GREEN_400,
-                                color=ft.Colors.WHITE
-                            ),
-                            ft.Button(
-                                content="Следующее →",
-                                on_click=next_word,
-                                bgcolor=ft.Colors.BLUE_400,
-                                color=ft.Colors.WHITE
-                            )
+                            ft.Button(content="✅ Знаю", on_click=mark_known, bgcolor=ft.Colors.GREEN_400, color=ft.Colors.WHITE),
+                            ft.Button(content="Следующее →", on_click=next_word, bgcolor=ft.Colors.BLUE_400, color=ft.Colors.WHITE)
                         ], alignment=ft.MainAxisAlignment.CENTER, spacing=20)
                     ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                     expand=True,
+                    padding=20
+                )
+            ]
+        )
+
+    # --- НОВЫЙ ЭКРАН: Поиск ---
+    def search_view():
+        results_list = ft.Column(spacing=10)
+        
+        def on_search(e):
+            results_list.controls.clear()
+            query = e.control.value.lower()
+            if not query: return
+            
+            words = all_words_flat()
+            found = [w for w in words if query in w["en"].lower() or query in w["ru"].lower()][:20]
+            
+            if not found:
+                results_list.controls.append(ft.Text("Ничего не найдено"))
+            for w in found:
+                results_list.controls.append(
+                    ft.ListTile(
+                        title=ft.Text(w["en"], weight=ft.FontWeight.BOLD),
+                        subtitle=ft.Text(w["ru"]),
+                    )
+                )
+            page.update()
+
+        return ft.View(
+            controls=[
+                ft.AppBar(title=ft.Text("Поиск"), bgcolor=ft.Colors.BLUE_100, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
+                ft.Container(
+                    content=ft.Column([
+                        ft.TextField(hint_text="Введите слово...", on_change=on_search, prefix_icon=ft.Icons.SEARCH),
+                        results_list
+                    ]),
+                    padding=20
+                )
+            ]
+        )
+
+    # --- НОВЫЙ ЭКРАН: Избранное ---
+    def favorites_view():
+        fav_words = [w for w in all_words_flat() if w["en"] in state.progress["favorites"]]
+        
+        items = []
+        if not fav_words:
+            items.append(ft.Text("Вы пока не добавили слова в избранное"))
+        else:
+            for w in fav_words:
+                items.append(
+                    ft.ListTile(
+                        title=ft.Text(w["en"], weight=ft.FontWeight.BOLD),
+                        subtitle=ft.Text(w["ru"]),
+                    )
+                )
+                
+        return ft.View(
+            controls=[
+                ft.AppBar(title=ft.Text("Избранное"), bgcolor=ft.Colors.RED_100, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
+                ft.Column(items, scroll=ft.ScrollMode.AUTO, expand=True)
+            ]
+        )
+
+    # --- НОВЫЙ ЭКРАН: Статистика ---
+    def stats_view():
+        known_count = len(state.progress["known"])
+        total_count = len(all_words_flat())
+        streak = state.progress.get("streak", 0)
+        
+        return ft.View(
+            controls=[
+                ft.AppBar(title=ft.Text("Статистика"), bgcolor=ft.Colors.GREEN_100, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
+                ft.Container(
+                    content=ft.Column([
+                        ft.ListTile(leading=ft.Text("🔥", size=30), title=ft.Text("Серия дней", weight=ft.FontWeight.BOLD), subtitle=ft.Text(f"{streak} дн.")),
+                        ft.ListTile(leading=ft.Text("📖", size=30), title=ft.Text("Изучено слов", weight=ft.FontWeight.BOLD), subtitle=ft.Text(f"{known_count} из {total_count}")),
+                        ft.ListTile(leading=ft.Text("⭐", size=30), title=ft.Text("В избранном", weight=ft.FontWeight.BOLD), subtitle=ft.Text(str(len(state.progress["favorites"])))),
+                    ]),
                     padding=20
                 )
             ]
