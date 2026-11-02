@@ -44,7 +44,7 @@ def main(page: ft.Page):
                             content=ft.Text(item["icon"], size=28),
                             bgcolor=ft.Colors.with_opacity(0.1, ft.Colors.BLUE),
                             border_radius=10, width=50, height=50,
-                            alignment=ft.alignment.center
+                            alignment=ft.Alignment.CENTER  # <-- ИСПРАВЛЕНО
                         ),
                         title=ft.Text(name, weight=ft.FontWeight.BOLD, size=16),
                         subtitle=ft.Text(f"{count_words(item)} слов", color=ft.Colors.GREY_600),
@@ -243,7 +243,7 @@ def main(page: ft.Page):
                                         ft.AlertDialog(
                                             title=ft.Text("Перевод", text_align=ft.TextAlign.CENTER),
                                             content=ft.Text(word["ru"], size=24, text_align=ft.TextAlign.CENTER),
-                                            alignment=ft.alignment.center
+                                            alignment=ft.Alignment.CENTER  # <-- ИСПРАВЛЕНО
                                         )
                                     ),
                                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), padding=20)
@@ -353,22 +353,7 @@ def main(page: ft.Page):
 
     def subscription_view():
         current_tier = state.license["tier"]
-        def make_card(name, tier_id, price, features):
-            is_current = (tier_id == current_tier)
-            card_bg = ft.Colors.BLUE_50 if is_current else ft.Colors.SURFACE_CONTAINER_HIGHEST
-            return ft.Container(
-                content=ft.Column([
-                    ft.Text(f"{TIERS[tier_id]['icon']} {name}", size=22, weight=ft.FontWeight.BOLD),
-                    ft.Text(f"{price} ₽/мес" if price > 0 else "Бесплатно", size=28, color=ft.Colors.BLUE, weight=ft.FontWeight.BOLD),
-                    ft.Divider(),
-                    ft.Column([ft.Row([ft.Icon(ft.Icons.CHECK_CIRCLE, color=ft.Colors.GREEN, size=16), ft.Text(f, size=14)]) for f in features]),
-                    ft.Button(content="Текущий план" if is_current else "Оформить", disabled=is_current, bgcolor=ft.Colors.BLUE if not is_current else ft.Colors.GREY_300, color=ft.Colors.WHITE, height=50, style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))),
-                ]),
-                bgcolor=card_bg, border_radius=20, padding=25, margin=ft.margin.only(bottom=15),
-                border=ft.border.all(2, ft.Colors.BLUE) if is_current else None
-            )
-            
-        # Убрал border.all, если Flet 1.0 не поддерживает
+        
         def make_card_safe(name, tier_id, price, features):
             is_current = (tier_id == current_tier)
             card_bg = ft.Colors.BLUE_50 if is_current else ft.Colors.SURFACE_CONTAINER_HIGHEST
