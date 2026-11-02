@@ -67,17 +67,16 @@ DATA = {
                     {"en": "he", "ipa": "hiː", "ru": "он"}, {"en": "she", "ipa": "ʃiː", "ru": "она"},
                     {"en": "it", "ipa": "ɪt", "ru": "оно"}, {"en": "we", "ipa": "wiː", "ru": "мы"}, {"en": "they", "ipa": "ðeɪ", "ru": "они"},
                 ]},
-                "Объектные": {"words": [
-                    {"en": "me", "ipa": "miː", "ru": "мне / меня"}, {"en": "you", "ipa": "juː", "ru": "тебе / тебя"},
-                    {"en": "him", "ipa": "hɪm", "ru": "ему / его"}, {"en": "her", "ipa": "hɜːr", "ru": "ей / её"},
-                    {"en": "it", "ipa": "ɪt", "ru": "ему / его"}, {"en": "us", "ipa": "ʌs", "ru": "нам / нас"},
-                    {"en": "them", "ipa": "ðem", "ru": "им / их"},
+                "Притяжательные": {"words": [
+                    {"en": "my", "ipa": "maɪ", "ru": "мой"}, {"en": "your", "ipa": "jɔːr", "ru": "твой / ваш"},
+                    {"en": "his", "ipa": "hɪz", "ru": "его"}, {"en": "her", "ipa": "hɜːr", "ru": "её"},
+                    {"en": "its", "ipa": "ɪts", "ru": "его / её"}, {"en": "our", "ipa": "ˈaʊər", "ru": "наш"}, {"en": "their", "ipa": "ðeər", "ru": "их"},
                 ]},
             }},
         },
     },
     "Словарный запас": {
-        "color": "#e88fa8", "icon": "📚", "desc": "Семья, профессии, животные, еда, дом",
+        "color": "#e88fa8", "icon": "📚", "desc": "Семья, профессии, животные, еда, дом, тело",
         "subsections": {
             "Семья": {"words": [
                 {"en": "mother", "ipa": "ˈmʌð.ər", "ru": "мама"}, {"en": "father", "ipa": "ˈfɑː.ðər", "ru": "папа"},
@@ -85,6 +84,12 @@ DATA = {
                 {"en": "son", "ipa": "sʌn", "ru": "сын"}, {"en": "daughter", "ipa": "ˈdɔː.tər", "ru": "дочь"},
                 {"en": "wife", "ipa": "waɪf", "ru": "жена"}, {"en": "husband", "ipa": "ˈhʌz.bənd", "ru": "муж"},
                 {"en": "grandmother", "ipa": "ˈɡræn.mʌð.ər", "ru": "бабушка"}, {"en": "grandfather", "ipa": "ˈɡræn.fɑː.ðər", "ru": "дедушка"},
+            ]},
+            "Профессии": {"words": [
+                {"en": "doctor", "ipa": "ˈdɒk.tər", "ru": "врач"}, {"en": "teacher", "ipa": "ˈtiː.tʃər", "ru": "учитель"},
+                {"en": "engineer", "ipa": "ˌen.dʒɪˈnɪər", "ru": "инженер"}, {"en": "programmer", "ipa": "ˈprəʊ.ɡræm.ər", "ru": "программист"},
+                {"en": "driver", "ipa": "ˈdraɪ.vər", "ru": "водитель"}, {"en": "cook", "ipa": "kʊk", "ru": "повар"},
+                {"en": "builder", "ipa": "ˈbɪl.dər", "ru": "строитель"}, {"en": "farmer", "ipa": "ˈfɑː.mər", "ru": "фермер"},
             ]},
             "Животные": {"words": [
                 {"en": "dog", "ipa": "dɒɡ", "ru": "собака"}, {"en": "cat", "ipa": "kæt", "ru": "кошка"},
@@ -100,7 +105,7 @@ DATA = {
                 {"en": "water", "ipa": "ˈwɔː.tər", "ru": "вода"}, {"en": "tea", "ipa": "tiː", "ru": "чай"},
                 {"en": "coffee", "ipa": "ˈkɒf.i", "ru": "кофе"}, {"en": "juice", "ipa": "dʒuːs", "ru": "сок"},
             ]},
-            "Дом и быт": {"words": [
+            "Дом": {"words": [
                 {"en": "house", "ipa": "haʊs", "ru": "дом"}, {"en": "room", "ipa": "ruːm", "ru": "комната"},
                 {"en": "kitchen", "ipa": "ˈkɪtʃ.ɪn", "ru": "кухня"}, {"en": "bedroom", "ipa": "ˈbed.ruːm", "ru": "спальня"},
                 {"en": "bathroom", "ipa": "ˈbɑːθ.ruːm", "ru": "ванная"}, {"en": "table", "ipa": "ˈteɪ.bl̩", "ru": "стол"},
@@ -113,22 +118,56 @@ DATA = {
                 {"en": "jeans", "ipa": "dʒiːnz", "ru": "джинсы"}, {"en": "jacket", "ipa": "ˈdʒæk.ɪt", "ru": "куртка"},
                 {"en": "shoes", "ipa": "ʃuːz", "ru": "обувь"}, {"en": "hat", "ipa": "hæt", "ru": "шляпа"},
             ]},
+            "Тело": {"words": [
+                {"en": "head", "ipa": "hed", "ru": "голова"}, {"en": "eye", "ipa": "aɪ", "ru": "глаз"},
+                {"en": "ear", "ipa": "ɪər", "ru": "ухо"}, {"en": "nose", "ipa": "nəʊz", "ru": "нос"},
+                {"en": "mouth", "ipa": "maʊθ", "ru": "рот"}, {"en": "hand", "ipa": "hænd", "ru": "рука"},
+                {"en": "leg", "ipa": "leɡ", "ru": "нога"}, {"en": "heart", "ipa": "hɑːt", "ru": "сердце"},
+            ]},
             "Школа": {"words": [
                 {"en": "school", "ipa": "skuːl", "ru": "школа"}, {"en": "teacher", "ipa": "ˈtiː.tʃər", "ru": "учитель"},
                 {"en": "student", "ipa": "ˈstjuː.dənt", "ru": "ученик"}, {"en": "book", "ipa": "bʊk", "ru": "книга"},
                 {"en": "pen", "ipa": "pen", "ru": "ручка"}, {"en": "pencil", "ipa": "ˈpen.sl̩", "ru": "карандаш"},
                 {"en": "lesson", "ipa": "ˈles.n̩", "ru": "урок"}, {"en": "homework", "ipa": "ˈhəʊm.wɜːk", "ru": "домашнее задание"},
             ]},
-            "Профессии": {"words": [
-                {"en": "doctor", "ipa": "ˈdɒk.tər", "ru": "врач"}, {"en": "teacher", "ipa": "ˈtiː.tʃər", "ru": "учитель"},
-                {"en": "engineer", "ipa": "ˌen.dʒɪˈnɪər", "ru": "инженер"}, {"en": "programmer", "ipa": "ˈprəʊ.ɡræm.ər", "ru": "программист"},
-                {"en": "driver", "ipa": "ˈdraɪ.vər", "ru": "водитель"}, {"en": "cook", "ipa": "kʊk", "ru": "повар"},
-                {"en": "builder", "ipa": "ˈbɪl.dər", "ru": "строитель"}, {"en": "farmer", "ipa": "ˈfɑː.mər", "ru": "фермер"},
+            "Время": {"words": [
+                {"en": "Monday", "ipa": "ˈmʌn.deɪ", "ru": "понедельник"}, {"en": "Tuesday", "ipa": "ˈtjuːz.deɪ", "ru": "вторник"},
+                {"en": "Wednesday", "ipa": "ˈwenz.deɪ", "ru": "среда"}, {"en": "Thursday", "ipa": "ˈθɜːz.deɪ", "ru": "четверг"},
+                {"en": "Friday", "ipa": "ˈfraɪ.deɪ", "ru": "пятница"}, {"en": "Saturday", "ipa": "ˈsæt.ə.deɪ", "ru": "суббота"},
+                {"en": "Sunday", "ipa": "ˈsʌn.deɪ", "ru": "воскресенье"}, {"en": "year", "ipa": "jɪər", "ru": "год"},
+            ]},
+        },
+    },
+    "Идиомы": {
+        "color": "#cba6f7", "icon": "🧩", "desc": "Популярные английские выражения",
+        "subsections": {
+            "Повседневные": {"words": [
+                {"en": "Hit the sack", "ipa": "hɪt ðə sæk", "ru": "Отправиться спать"},
+                {"en": "Twist someone's arm", "ipa": "twɪst ˈsʌm.wʌnz ɑːrm", "ru": "Уговорить, заставить"},
+                {"en": "Stab someone in the back", "ipa": "stæb ˈsʌm.wʌn ɪn ðə bæk", "ru": "Предать, ударить в спину"},
+                {"en": "Lose your touch", "ipa": "luːz jɔːr tʌtʃ", "ru": "Потерять хватку"},
+                {"en": "Sit tight", "ipa": "sɪt taɪt", "ru": "Терпеливо ждать"},
+            ]},
+            "Еда и учеба": {"words": [
+                {"en": "Hit the books", "ipa": "hɪt ðə bʊks", "ru": "Усердно учиться"},
+                {"en": "Spill the beans", "ipa": "spɪl ðə biːnz", "ru": "Проговориться, выдать секрет"},
+                {"en": "Cool as a cucumber", "ipa": "kuːl æz ə ˈkjuː.kʌm.bər", "ru": "Спокойный, как удав"},
+            ]},
+        },
+    },
+    "Путешествия": {
+        "color": "#f9e2af", "icon": "✈️", "desc": "Фразы для поездок",
+        "subsections": {
+            "В аэропорту": {"words": [
+                {"en": "Where is the gate?", "ipa": "weər ɪz ðə ɡeɪt", "ru": "Где выход на посадку?"},
+                {"en": "I have a connecting flight.", "ipa": "aɪ hæv ə kəˈnek.tɪŋ flaɪt", "ru": "У меня стыковочный рейс."},
+                {"en": "Is it a direct flight?", "ipa": "ɪz ɪt ə dəˈrekt flaɪt", "ru": "Это прямой рейс?"},
+                {"en": "My luggage is lost.", "ipa": "maɪ ˈlʌɡ.ɪdʒ ɪz lɒst", "ru": "Мой багаж потерялся."},
             ]},
         },
     },
     "Фразы": {
-        "color": "#7bc9b8", "icon": "💬", "desc": "Готовые фразы",
+        "color": "#7bc9b8", "icon": "💬", "desc": "Готовые фразы для общения",
         "subsections": {
             "Приветствие": {"words": [
                 {"en": "Hello!", "ipa": "həˈloʊ", "ru": "Привет!"}, {"en": "Good morning!", "ipa": "ɡʊd ˈmɔːr.nɪŋ", "ru": "Доброе утро!"},
