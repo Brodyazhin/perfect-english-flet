@@ -4,7 +4,7 @@ from subscription import state, TIERS
 
 def main(page: ft.Page):
     page.title = "Perfect English"
-    page.theme_mode = ft.ThemeMode.LIGHT  # Начинаем со светлой темы
+    page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 0
     
     def toggle_theme(e):
@@ -32,7 +32,6 @@ def main(page: ft.Page):
             page.views.append(subscription_view())
         page.update()
 
-    # --- ЭКРАН 1: Главное меню ---
     def home_view():
         tier = TIERS[state.license["tier"]]
         
@@ -52,7 +51,7 @@ def main(page: ft.Page):
                         subtitle=ft.Text(item["desc"]),
                         trailing=ft.Icon(ft.Icons.ARROW_FORWARD_IOS),
                     ),
-                    bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, # Адаптивный цвет под тему
+                    bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
                     border_radius=15,
                     margin=10,
                     shadow=ft.BoxShadow(blur_radius=10, color=ft.Colors.with_opacity(0.05, ft.Colors.BLACK)),
@@ -65,9 +64,7 @@ def main(page: ft.Page):
                 ft.AppBar(
                     title=ft.Text("Perfect English"), 
                     bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
-                    actions=[
-                        ft.IconButton(ft.Icons.BRIGHTNESS_6, on_click=toggle_theme)
-                    ]
+                    actions=[ft.IconButton(ft.Icons.BRIGHTNESS_6, on_click=toggle_theme)]
                 ),
                 ft.Container(
                     content=ft.Column([
@@ -85,14 +82,13 @@ def main(page: ft.Page):
                         ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                         ft.Text("📚 Разделы", size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_700),
                         ft.Column(section_cards, spacing=0)
-                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, scroll=ft.ScrollMode.AUTO), # Скролл главного меню
                     padding=30,
                     expand=True
                 )
             ]
         )
 
-    # --- Логика разделов ---
     current_section_data = {}
     
     def open_section(section_name):
@@ -104,21 +100,32 @@ def main(page: ft.Page):
         name = current_section_data["name"]
         item = current_section_data["item"]
         
-        subs = []
-        for sub_name, sub_item in item["subsections"].items():
-            subs.append(
-                ft.Container(
-                    content=ft.ListTile(
-                        title=ft.Text(sub_name, weight=ft.FontWeight.W_500),
-                        subtitle=ft.Text(f"{count_words(sub_item)} слов"),
-                        trailing=ft.Icon(ft.Icons.PLAY_ARROW),
-                    ),
-                    bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
-                    border_radius=10,
-                    margin=8,
-                    on_click=lambda e, n=sub_name, i=sub_item: open_flashcards(n, i)
+        subs_list = ft.Column(spacing=0)
+        
+        def render_subs(query=""):
+            subs_list.controls.clear()
+            for sub_name, sub_item in item["subsections"].items():
+                if query and query.lower() not in sub_name.lower():
+                    continue
+                subs_list.controls.append(
+                    ft.Container(
+                        content=ft.ListTile(
+                            title=ft.Text(sub_name, weight=ft.FontWeight.W_500),
+                            subtitle=ft.Text(f"{count_words(sub_item)} слов"),
+                            trailing=ft.Icon(ft.Icons.PLAY_ARROW),
+                        ),
+                        bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
+                        border_radius=10,
+                        margin=8,
+                        on_click=lambda e, n=sub_name, i=sub_item: open_flashcards(n, i)
+                    )
                 )
-            )
+            page.update()
+
+        render_subs() # Первый рендер
+
+        def on_search(e):
+            render_subs(e.control.value)
 
         return ft.View(
             controls=[
@@ -129,20 +136,22 @@ def main(page: ft.Page):
                 ),
                 ft.Container(
                     content=ft.Column([
-                        ft.Text("Выбери тему", size=16, color=ft.Colors.GREY_600),
-                        ft.Column(subs, spacing=0)
-                    ], scroll=ft.ScrollMode.AUTO), # Скролл для тем
+                        ft.TextField(
+                            hint_text="Поиск по темам...", 
+                            prefix_icon=ft.Icons.SEARCH,
+                            on_change=on_search,
+                        ),
+                        ft.Column([subs_list], scroll=ft.ScrollMode.AUTO, expand=True)
+                    ]),
                     padding=20,
                     expand=True
                 )
             ]
         )
 
-    # --- ЭКРАН 3: Карточки ---
     current_cards_data = {"words": [], "index": 0, "title": ""}
     
     def open_flashcards(title, sub_item):
-        # Рекурсивно собираем все слова, если есть подразделы
         words = sub_item.get("words", [])
         if "subsections" in sub_item:
             words = []
@@ -203,14 +212,13 @@ def main(page: ft.Page):
                             ft.Button(content="✅ Знаю", on_click=mark_known, bgcolor=ft.Colors.GREEN_400, color=ft.Colors.WHITE),
                             ft.Button(content="Следующее →", on_click=next_word, bgcolor=ft.Colors.BLUE_400, color=ft.Colors.WHITE)
                         ], alignment=ft.MainAxisAlignment.CENTER, spacing=20)
-                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, scroll=ft.ScrollMode.AUTO), # Скролл для карточек
+                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, scroll=ft.ScrollMode.AUTO),
                     expand=True,
                     padding=20
                 )
             ]
         )
 
-    # --- НОВЫЙ ЭКРАН: Поиск ---
     def search_view():
         results_list = ft.Column(spacing=10)
         
@@ -240,14 +248,13 @@ def main(page: ft.Page):
                     content=ft.Column([
                         ft.TextField(hint_text="Введите слово...", on_change=on_search, prefix_icon=ft.Icons.SEARCH),
                         results_list
-                    ], scroll=ft.ScrollMode.AUTO), # Скролл для поиска
+                    ], scroll=ft.ScrollMode.AUTO),
                     padding=20,
                     expand=True
                 )
             ]
         )
 
-    # --- НОВЫЙ ЭКРАН: Избранное ---
     def favorites_view():
         fav_words = [w for w in all_words_flat() if w["en"] in state.progress["favorites"]]
         
@@ -266,11 +273,10 @@ def main(page: ft.Page):
         return ft.View(
             controls=[
                 ft.AppBar(title=ft.Text("Избранное"), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
-                ft.Column(items, scroll=ft.ScrollMode.AUTO, expand=True) # Скролл для избранного
+                ft.Column(items, scroll=ft.ScrollMode.AUTO, expand=True)
             ]
         )
 
-    # --- НОВЫЙ ЭКРАН: Статистика ---
     def stats_view():
         known_count = len(state.progress["known"])
         total_count = len(all_words_flat())
@@ -284,14 +290,13 @@ def main(page: ft.Page):
                         ft.ListTile(leading=ft.Text("🔥", size=30), title=ft.Text("Серия дней", weight=ft.FontWeight.BOLD), subtitle=ft.Text(f"{streak} дн.")),
                         ft.ListTile(leading=ft.Text("📖", size=30), title=ft.Text("Изучено слов", weight=ft.FontWeight.BOLD), subtitle=ft.Text(f"{known_count} из {total_count}")),
                         ft.ListTile(leading=ft.Text("⭐", size=30), title=ft.Text("В избранном", weight=ft.FontWeight.BOLD), subtitle=ft.Text(str(len(state.progress["favorites"])))),
-                    ], scroll=ft.ScrollMode.AUTO), # Скролл для статистики
+                    ], scroll=ft.ScrollMode.AUTO),
                     padding=20,
                     expand=True
                 )
             ]
         )
 
-    # --- НОВЫЙ ЭКРАН: Подписка ---
     def subscription_view():
         current_tier = state.license["tier"]
         
@@ -325,7 +330,7 @@ def main(page: ft.Page):
                     make_card("Бесплатный", "free", 0, ["30 слов в день", "Базовый раздел"]),
                     make_card("Плюс", "plus", 199, ["500 слов в день", "Все разделы", "Тесты"]),
                     make_card("Премиум", "premium", 499, ["Безлимит", "Экспорт прогресса", "Приоритетная поддержка"]),
-                ], scroll=ft.ScrollMode.AUTO, expand=True) # Скролл для подписки
+                ], scroll=ft.ScrollMode.AUTO, expand=True)
             ]
         )
 
