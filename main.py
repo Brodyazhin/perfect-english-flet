@@ -53,7 +53,7 @@ def main(page: ft.Page):
                     bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
                     border_radius=20,
                     padding=5,
-                    margin=ft.Margin(bottom=12), # <-- ИСПРАВЛЕНО
+                    margin=ft.Margin(bottom=12),
                     shadow=ft.BoxShadow(blur_radius=15, color=ft.Colors.with_opacity(0.05, ft.Colors.BLACK), offset=ft.Offset(0, 5)),
                     on_click=lambda e, n=name: open_section(n)
                 )
@@ -73,14 +73,14 @@ def main(page: ft.Page):
                             content=ft.Row([
                                 ft.Column([
                                     ft.Text(f"{tier['icon']} {tier['name']} тариф", weight=ft.FontWeight.BOLD, size=18),
-                                    ft.Text("Управление подпиской", size=12, color=ft.Colors.WHITE70),
+                                    ft.Text("Управление подпиской", size=12, color=ft.Colors.WHITE_70), # <-- ИСПРАВЛЕНО
                                 ]),
                                 ft.Icon(ft.Icons.DIAMOND, color=ft.Colors.ORANGE_400, size=30)
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                             bgcolor=ft.Colors.BLUE_600,
                             padding=20,
                             border_radius=20,
-                            margin=ft.Margin(bottom=20), # <-- ИСПРАВЛЕНО
+                            margin=ft.Margin(bottom=20),
                             on_click=lambda e: navigate("/subscription")
                         ),
                         ft.Text("Разделы", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_800),
@@ -365,7 +365,7 @@ def main(page: ft.Page):
                     ft.Column([ft.Row([ft.Icon(ft.Icons.CHECK_CIRCLE, color=ft.Colors.GREEN, size=16), ft.Text(f, size=14)]) for f in features]),
                     ft.Button(content="Текущий план" if is_current else "Оформить", disabled=is_current, bgcolor=ft.Colors.BLUE if not is_current else ft.Colors.GREY_300, color=ft.Colors.WHITE, height=50),
                 ]),
-                bgcolor=card_bg, border_radius=20, padding=25, margin=ft.Margin(bottom=15), # <-- ИСПРАВЛЕНО
+                bgcolor=card_bg, border_radius=20, padding=25, margin=ft.Margin(bottom=15),
             )
 
         return ft.View(
