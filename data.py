@@ -100,6 +100,31 @@ DATA = {
                 {"en": "water", "ipa": "ˈwɔː.tər", "ru": "вода"}, {"en": "tea", "ipa": "tiː", "ru": "чай"},
                 {"en": "coffee", "ipa": "ˈkɒf.i", "ru": "кофе"}, {"en": "juice", "ipa": "dʒuːs", "ru": "сок"},
             ]},
+            "Дом и быт": {"words": [
+                {"en": "house", "ipa": "haʊs", "ru": "дом"}, {"en": "room", "ipa": "ruːm", "ru": "комната"},
+                {"en": "kitchen", "ipa": "ˈkɪtʃ.ɪn", "ru": "кухня"}, {"en": "bedroom", "ipa": "ˈbed.ruːm", "ru": "спальня"},
+                {"en": "bathroom", "ipa": "ˈbɑːθ.ruːm", "ru": "ванная"}, {"en": "table", "ipa": "ˈteɪ.bl̩", "ru": "стол"},
+                {"en": "chair", "ipa": "tʃeər", "ru": "стул"}, {"en": "bed", "ipa": "bed", "ru": "кровать"},
+                {"en": "door", "ipa": "dɔːr", "ru": "дверь"}, {"en": "window", "ipa": "ˈwɪn.dəʊ", "ru": "окно"},
+            ]},
+            "Одежда": {"words": [
+                {"en": "clothes", "ipa": "kləʊðz", "ru": "одежда"}, {"en": "shirt", "ipa": "ʃɜːt", "ru": "рубашка"},
+                {"en": "T-shirt", "ipa": "ˈtiː.ʃɜːt", "ru": "футболка"}, {"en": "dress", "ipa": "dres", "ru": "платье"},
+                {"en": "jeans", "ipa": "dʒiːnz", "ru": "джинсы"}, {"en": "jacket", "ipa": "ˈdʒæk.ɪt", "ru": "куртка"},
+                {"en": "shoes", "ipa": "ʃuːz", "ru": "обувь"}, {"en": "hat", "ipa": "hæt", "ru": "шляпа"},
+            ]},
+            "Школа": {"words": [
+                {"en": "school", "ipa": "skuːl", "ru": "школа"}, {"en": "teacher", "ipa": "ˈtiː.tʃər", "ru": "учитель"},
+                {"en": "student", "ipa": "ˈstjuː.dənt", "ru": "ученик"}, {"en": "book", "ipa": "bʊk", "ru": "книга"},
+                {"en": "pen", "ipa": "pen", "ru": "ручка"}, {"en": "pencil", "ipa": "ˈpen.sl̩", "ru": "карандаш"},
+                {"en": "lesson", "ipa": "ˈles.n̩", "ru": "урок"}, {"en": "homework", "ipa": "ˈhəʊm.wɜːk", "ru": "домашнее задание"},
+            ]},
+            "Профессии": {"words": [
+                {"en": "doctor", "ipa": "ˈdɒk.tər", "ru": "врач"}, {"en": "teacher", "ipa": "ˈtiː.tʃər", "ru": "учитель"},
+                {"en": "engineer", "ipa": "ˌen.dʒɪˈnɪər", "ru": "инженер"}, {"en": "programmer", "ipa": "ˈprəʊ.ɡræm.ər", "ru": "программист"},
+                {"en": "driver", "ipa": "ˈdraɪ.vər", "ru": "водитель"}, {"en": "cook", "ipa": "kʊk", "ru": "повар"},
+                {"en": "builder", "ipa": "ˈbɪl.dər", "ru": "строитель"}, {"en": "farmer", "ipa": "ˈfɑː.mər", "ru": "фермер"},
+            ]},
         },
     },
     "Фразы": {
