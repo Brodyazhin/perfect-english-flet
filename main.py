@@ -73,7 +73,7 @@ def main(page: ft.Page):
                             content=ft.Row([
                                 ft.Column([
                                     ft.Text(f"{tier['icon']} {tier['name']} тариф", weight=ft.FontWeight.BOLD, size=18),
-                                    ft.Text("Управление подпиской", size=12, color=ft.Colors.WHITE_70), # <-- ИСПРАВЛЕНО
+                                    ft.Text("Управление подпиской", size=12, color=ft.Colors.WHITE_70),
                                 ]),
                                 ft.Icon(ft.Icons.DIAMOND, color=ft.Colors.ORANGE_400, size=30)
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
@@ -93,10 +93,10 @@ def main(page: ft.Page):
             ],
             navigation_bar=ft.NavigationBar(
                 destinations=[
-                    ft.NavigationDestination(icon=ft.Icons.HOME, label="Главная"),
-                    ft.NavigationDestination(icon=ft.Icons.SEARCH, label="Поиск"),
-                    ft.NavigationDestination(icon=ft.Icons.FAVORITE, label="Избранное"),
-                    ft.NavigationDestination(icon=ft.Icons.BAR_CHART, label="Статистика"),
+                    ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), # <-- ИСПРАВЛЕНО
+                    ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), # <-- ИСПРАВЛЕНО
+                    ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), # <-- ИСПРАВЛЕНО
+                    ft.NavigationBarDestination(icon=ft.Icons.BAR_CHART, label="Статистика"), # <-- ИСПРАВЛЕНО
                 ],
                 on_change=lambda e: navigate(["/", "/search", "/favorites", "/stats"][e.control.selected_index])
             )
@@ -323,7 +323,7 @@ def main(page: ft.Page):
                 ft.Container(content=ft.Column(items, scroll=ft.ScrollMode.AUTO, expand=True), padding=20, expand=True)
             ],
             navigation_bar=ft.NavigationBar(
-                destinations=[ft.NavigationDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationDestination(icon=ft.Icons.BAR_CHART, label="Статистика")],
+                destinations=[ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationBarDestination(icon=ft.Icons.BAR_CHART, label="Статистика")], # <-- ИСПРАВЛЕНО
                 selected_index=2, on_change=lambda e: navigate(["/", "/search", "/favorites", "/stats"][e.control.selected_index])
             )
         )
@@ -346,7 +346,7 @@ def main(page: ft.Page):
                 )
             ],
             navigation_bar=ft.NavigationBar(
-                destinations=[ft.NavigationDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationDestination(icon=ft.Icons.BAR_CHART, label="Статистика")],
+                destinations=[ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationBarDestination(icon=ft.Icons.BAR_CHART, label="Статистика")], # <-- ИСПРАВЛЕНО
                 selected_index=3, on_change=lambda e: navigate(["/", "/search", "/favorites", "/stats"][e.control.selected_index])
             )
         )
