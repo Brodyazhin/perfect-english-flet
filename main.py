@@ -44,7 +44,7 @@ def main(page: ft.Page):
                             content=ft.Text(item["icon"], size=28),
                             bgcolor=ft.Colors.with_opacity(0.1, ft.Colors.BLUE),
                             border_radius=10, width=50, height=50,
-                            alignment=ft.Alignment.CENTER  # <-- ИСПРАВЛЕНО
+                            alignment=ft.Alignment.CENTER
                         ),
                         title=ft.Text(name, weight=ft.FontWeight.BOLD, size=16),
                         subtitle=ft.Text(f"{count_words(item)} слов", color=ft.Colors.GREY_600),
@@ -53,7 +53,7 @@ def main(page: ft.Page):
                     bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
                     border_radius=20,
                     padding=5,
-                    margin=ft.margin.only(bottom=12),
+                    margin=ft.Margin(bottom=12), # <-- ИСПРАВЛЕНО
                     shadow=ft.BoxShadow(blur_radius=15, color=ft.Colors.with_opacity(0.05, ft.Colors.BLACK), offset=ft.Offset(0, 5)),
                     on_click=lambda e, n=name: open_section(n)
                 )
@@ -80,7 +80,7 @@ def main(page: ft.Page):
                             bgcolor=ft.Colors.BLUE_600,
                             padding=20,
                             border_radius=20,
-                            margin=ft.margin.only(bottom=20),
+                            margin=ft.Margin(bottom=20), # <-- ИСПРАВЛЕНО
                             on_click=lambda e: navigate("/subscription")
                         ),
                         ft.Text("Разделы", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_800),
@@ -243,7 +243,7 @@ def main(page: ft.Page):
                                         ft.AlertDialog(
                                             title=ft.Text("Перевод", text_align=ft.TextAlign.CENTER),
                                             content=ft.Text(word["ru"], size=24, text_align=ft.TextAlign.CENTER),
-                                            alignment=ft.Alignment.CENTER  # <-- ИСПРАВЛЕНО
+                                            alignment=ft.Alignment.CENTER
                                         )
                                     ),
                                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), padding=20)
@@ -315,7 +315,7 @@ def main(page: ft.Page):
             items.append(ft.Text("Вы пока не добавили слова в избранное", color=ft.Colors.GREY_600))
         else:
             for w in fav_words:
-                items.append(ft.Container(content=ft.ListTile(title=ft.Text(w["en"], weight=ft.FontWeight.BOLD), subtitle=ft.Text(w["ru"])), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, padding=5, margin=ft.margin.only(bottom=5)))
+                items.append(ft.Container(content=ft.ListTile(title=ft.Text(w["en"], weight=ft.FontWeight.BOLD), subtitle=ft.Text(w["ru"])), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, padding=5, margin=ft.Margin(bottom=5)))
                 
         return ft.View(
             controls=[
@@ -365,7 +365,7 @@ def main(page: ft.Page):
                     ft.Column([ft.Row([ft.Icon(ft.Icons.CHECK_CIRCLE, color=ft.Colors.GREEN, size=16), ft.Text(f, size=14)]) for f in features]),
                     ft.Button(content="Текущий план" if is_current else "Оформить", disabled=is_current, bgcolor=ft.Colors.BLUE if not is_current else ft.Colors.GREY_300, color=ft.Colors.WHITE, height=50),
                 ]),
-                bgcolor=card_bg, border_radius=20, padding=25, margin=ft.margin.only(bottom=15),
+                bgcolor=card_bg, border_radius=20, padding=25, margin=ft.Margin(bottom=15), # <-- ИСПРАВЛЕНО
             )
 
         return ft.View(
