@@ -35,11 +35,6 @@ DATA = {
                 {"en": "brown", "ipa": "braʊn", "ru": "коричневый"}, {"en": "black", "ipa": "blæk", "ru": "чёрный"},
                 {"en": "white", "ipa": "waɪt", "ru": "белый"},
             ]},
-            "Местоимения": {"words": [
-                {"en": "I", "ipa": "aɪ", "ru": "я"}, {"en": "you", "ipa": "juː", "ru": "ты / вы"},
-                {"en": "he", "ipa": "hiː", "ru": "он"}, {"en": "she", "ipa": "ʃiː", "ru": "она"},
-                {"en": "it", "ipa": "ɪt", "ru": "оно"}, {"en": "we", "ipa": "wiː", "ru": "мы"}, {"en": "they", "ipa": "ðeɪ", "ru": "они"},
-            ]},
         },
     },
     "2. Словарный запас": {
@@ -64,18 +59,6 @@ DATA = {
                 {"en": "water", "ipa": "ˈwɔː.tər", "ru": "вода"}, {"en": "tea", "ipa": "tiː", "ru": "чай"},
                 {"en": "coffee", "ipa": "ˈkɒf.i", "ru": "кофе"}, {"en": "juice", "ipa": "dʒuːs", "ru": "сок"},
             ]},
-            "Дом": {"words": [
-                {"en": "house", "ipa": "haʊs", "ru": "дом"}, {"en": "room", "ipa": "ruːm", "ru": "комната"},
-                {"en": "kitchen", "ipa": "ˈkɪtʃ.ɪn", "ru": "кухня"}, {"en": "bedroom", "ipa": "ˈbed.ruːm", "ru": "спальня"},
-                {"en": "bathroom", "ipa": "ˈbɑːθ.ruːm", "ru": "ванная"}, {"en": "table", "ipa": "ˈteɪ.bl̩", "ru": "стол"},
-                {"en": "chair", "ipa": "tʃeər", "ru": "стул"}, {"en": "bed", "ipa": "bed", "ru": "кровать"},
-            ]},
-            "Одежда": {"words": [
-                {"en": "clothes", "ipa": "kləʊðz", "ru": "одежда"}, {"en": "shirt", "ipa": "ʃɜːt", "ru": "рубашка"},
-                {"en": "T-shirt", "ipa": "ˈtiː.ʃɜːt", "ru": "футболка"}, {"en": "dress", "ipa": "dres", "ru": "платье"},
-                {"en": "jeans", "ipa": "dʒiːnz", "ru": "джинсы"}, {"en": "jacket", "ipa": "ˈdʒæk.ɪt", "ru": "куртка"},
-                {"en": "shoes", "ipa": "ʃuːz", "ru": "обувь"}, {"en": "hat", "ipa": "hæt", "ru": "шляпа"},
-            ]},
         },
     },
     "3. Фразы": {
@@ -91,16 +74,10 @@ DATA = {
                 {"en": "Sorry", "ipa": "ˈsɒr. i", "ru": "Извините"}, {"en": "Excuse me", "ipa": "ɪkˈskjuːz miː", "ru": "Простите"},
                 {"en": "No problem", "ipa": "noʊ ˈprɒb.ləm", "ru": "Без проблем"},
             ]},
-            "Знакомство": {"words": [
-                {"en": "What's your name?", "ipa": "wɒts jɔːr neɪm", "ru": "Как тебя зовут?"},
-                {"en": "My name is Anna.", "ipa": "maɪ neɪm ɪz ˈæn.ə", "ru": "Меня зовут Анна."},
-                {"en": "Where are you from?", "ipa": "weər ɑːr juː frɒm", "ru": "Откуда ты?"},
-                {"en": "I'm from Russia.", "ipa": "aɪm frɒm ˈrʌʃ.ə", "ru": "Я из России."},
-            ]},
         },
     },
     "4. Продвинутый уровень": {
-        "color": "#cba6f7", "icon": "🚀", "desc": "Идиомы, путешествия и фразы для общения",
+        "color": "#cba6f7", "icon": "🚀", "desc": "Идиомы, сленг, фразовые глаголы и бизнес",
         "subsections": {
             "Идиомы": {"words": [
                 {"en": "Hit the sack", "ipa": "hɪt ðə sæk", "ru": "Отправиться спать"},
@@ -109,11 +86,36 @@ DATA = {
                 {"en": "Spill the beans", "ipa": "spɪl ðə biːnz", "ru": "Выдать секрет"},
                 {"en": "Cool as a cucumber", "ipa": "kuːl æz ə ˈkjuː.kʌm.bər", "ru": "Спокойный"},
             ]},
-            "В аэропорту": {"words": [
-                {"en": "Where is the gate?", "ipa": "weər ɪz ðə ɡeɪt", "ru": "Где выход на посадку?"},
-                {"en": "I have a connecting flight.", "ipa": "aɪ hæv ə kəˈnek.tɪŋ flaɪt", "ru": "У меня стыковочный рейс."},
-                {"en": "Is it a direct flight?", "ipa": "ɪz ɪt ə dəˈrekt flaɪt", "ru": "Это прямой рейс?"},
-                {"en": "My luggage is lost.", "ipa": "maɪ ˈlʌɡ.ɪdʒ ɪz lɒst", "ru": "Мой багаж потерялся."},
+            "Фразовые глаголы": {"words": [
+                {"en": "Give up", "ipa": "ɡɪv ʌp", "ru": "Сдаваться"},
+                {"en": "Look after", "ipa": "lʊk ˈɑːf.tər", "ru": "Заботиться"},
+                {"en": "Find out", "ipa": "faɪnd aʊt", "ru": "Выяснить"},
+                {"en": "Turn on / off", "ipa": "tɜːn ɒn / ɒf", "ru": "Включить / выключить"},
+                {"en": "Put off", "ipa": "pʊt ɒf", "ru": "Откладывать"},
+                {"en": "Get along", "ipa": "ɡet əˈlɒŋ", "ru": "Ладить (с кем-то)"},
+            ]},
+            "Полезные прилагательные": {"words": [
+                {"en": "Amazing", "ipa": "əˈmeɪ.zɪŋ", "ru": "Изумительный"},
+                {"en": "Awful", "ipa": "ˈɔː.fəl", "ru": "Ужасный"},
+                {"en": "Huge", "ipa": "hjuːdʒ", "ru": "Огромный"},
+                {"en": "Tiny", "ipa": "ˈtaɪ.ni", "ru": "Крошечный"},
+                {"en": "Exhausted", "ipa": "ɪɡˈzɔː.stɪd", "ru": "Измученный"},
+                {"en": "Confident", "ipa": "ˈkɒn.fɪ.dənt", "ru": "Уверенный"},
+            ]},
+            "Деловой английский": {"words": [
+                {"en": "Deadline", "ipa": "ˈded.laɪn", "ru": "Крайний срок"},
+                {"en": "Meeting", "ipa": "ˈmiː.tɪŋ", "ru": "Встреча"},
+                {"en": "Report", "ipa": "rɪˈpɔːt", "ru": "Отчёт"},
+                {"en": "Client", "ipa": "ˈklaɪ.ənt", "ru": "Клиент"},
+                {"en": "Budget", "ipa": "ˈbʌdʒ.ɪt", "ru": "Бюджет"},
+                {"en": "Negotiation", "ipa": "nɪˌɡəʊ.ʃiˈeɪ.ʃn̩", "ru": "Переговоры"},
+            ]},
+            "Сленг и неформальное общение": {"words": [
+                {"en": "Chill", "ipa": "tʃɪl", "ru": "Расслабляться"},
+                {"en": "Awesome", "ipa": "ˈɔː.səm", "ru": "Круто / классно"},
+                {"en": "Broke", "ipa": "brəʊk", "ru": "Без денег"},
+                {"en": "Hang out", "ipa": "hæŋ aʊt", "ru": "Тусоваться"},
+                {"en": "Piece of cake", "ipa": "piːs əv keɪk", "ru": "Проще простого"},
             ]},
         },
     },
