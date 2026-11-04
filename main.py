@@ -93,10 +93,10 @@ def main(page: ft.Page):
             ],
             navigation_bar=ft.NavigationBar(
                 destinations=[
-                    ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), # <-- ИСПРАВЛЕНО
-                    ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), # <-- ИСПРАВЛЕНО
-                    ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), # <-- ИСПРАВЛЕНО
-                    ft.NavigationBarDestination(icon=ft.Icons.BAR_CHART, label="Статистика"), # <-- ИСПРАВЛЕНО
+                    ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"),
+                    ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"),
+                    ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"),
+                    ft.NavigationBarDestination(icon=ft.Icons.BAR_CHART, label="Статистика"),
                 ],
                 on_change=lambda e: navigate(["/", "/search", "/favorites", "/stats"][e.control.selected_index])
             )
@@ -258,12 +258,12 @@ def main(page: ft.Page):
                         ft.Container(height=30),
                         # Кнопки управления
                         ft.Row([
-                            ft.ElevatedButton(
+                            ft.Button( # <-- ИСПРАВЛЕНО
                                 content=ft.Row([ft.Icon(ft.Icons.CLOSE, color=ft.Colors.WHITE), ft.Text("Не знаю", color=ft.Colors.WHITE, weight=ft.FontWeight.BOLD)]),
                                 bgcolor=ft.Colors.RED_400, on_click=next_word, expand=True, height=60,
                                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=15))
                             ),
-                            ft.ElevatedButton(
+                            ft.Button( # <-- ИСПРАВЛЕНО
                                 content=ft.Row([ft.Icon(ft.Icons.CHECK, color=ft.Colors.WHITE), ft.Text("Знаю", color=ft.Colors.WHITE, weight=ft.FontWeight.BOLD)]),
                                 bgcolor=ft.Colors.GREEN_400, on_click=mark_known, expand=True, height=60,
                                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=15))
@@ -323,7 +323,7 @@ def main(page: ft.Page):
                 ft.Container(content=ft.Column(items, scroll=ft.ScrollMode.AUTO, expand=True), padding=20, expand=True)
             ],
             navigation_bar=ft.NavigationBar(
-                destinations=[ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationBarDestination(icon=ft.Icons.BAR_CHART, label="Статистика")], # <-- ИСПРАВЛЕНО
+                destinations=[ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationBarDestination(icon=ft.Icons.BAR_CHART, label="Статистика")],
                 selected_index=2, on_change=lambda e: navigate(["/", "/search", "/favorites", "/stats"][e.control.selected_index])
             )
         )
@@ -346,7 +346,7 @@ def main(page: ft.Page):
                 )
             ],
             navigation_bar=ft.NavigationBar(
-                destinations=[ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationBarDestination(icon=ft.Icons.BAR_CHART, label="Статистика")], # <-- ИСПРАВЛЕНО
+                destinations=[ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationBarDestination(icon=ft.Icons.BAR_CHART, label="Статистика")],
                 selected_index=3, on_change=lambda e: navigate(["/", "/search", "/favorites", "/stats"][e.control.selected_index])
             )
         )
