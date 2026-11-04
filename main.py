@@ -1,4 +1,6 @@
 import flet as ft
+import time
+import threading
 from data import DATA, count_words, all_words_flat
 from subscription import state, TIERS
 
@@ -12,7 +14,6 @@ def main(page: ft.Page):
         page.theme_mode = ft.ThemeMode.DARK if page.theme_mode == ft.ThemeMode.LIGHT else ft.ThemeMode.LIGHT
         page.update()
     
-    # --- Навигация ---
     def navigate(route):
         page.views.clear()
         if route == "/":
@@ -31,12 +32,17 @@ def main(page: ft.Page):
             page.views.append(subscription_view())
         page.update()
 
-    # --- ЭКРАН 1: Главное меню ---
+    # --- ГЛАВНОЕ МЕНЮ ---
     def home_view():
         tier = TIERS[state.license["tier"]]
         
         section_cards = []
         for name, item in DATA.items():
+            # Проверяем, заблокирован ли раздел (Продвинутый уровень = 4)
+            is_locked = (name.startswith("4.") and state.license["tier"] == "free")
+            
+            lock_icon = ft.Icon(ft.Icons.LOCK, color=ft.Colors.RED) if is_locked else ft.Icon(ft.Icons.CHEVRON_RIGHT, color=ft.Colors.GREY_400)
+            
             section_cards.append(
                 ft.Container(
                     content=ft.ListTile(
@@ -48,14 +54,14 @@ def main(page: ft.Page):
                         ),
                         title=ft.Text(name, weight=ft.FontWeight.BOLD, size=16),
                         subtitle=ft.Text(item["desc"], color=ft.Colors.GREY_600, size=12),
-                        trailing=ft.Icon(ft.Icons.CHEVRON_RIGHT, color=ft.Colors.GREY_400),
+                        trailing=lock_icon,
                     ),
                     bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
                     border_radius=20,
                     padding=5,
                     margin=ft.Margin(bottom=12),
                     shadow=ft.BoxShadow(blur_radius=15, color=ft.Colors.with_opacity(0.05, ft.Colors.BLACK), offset=ft.Offset(0, 5)),
-                    on_click=lambda e, n=name: open_section(n)
+                    on_click=lambda e, n=name, locked=is_locked: open_section(n, locked)
                 )
             )
 
@@ -68,7 +74,6 @@ def main(page: ft.Page):
                 ),
                 ft.Container(
                     content=ft.Column([
-                        # Баннер подписки
                         ft.Container(
                             content=ft.Row([
                                 ft.Column([
@@ -102,10 +107,21 @@ def main(page: ft.Page):
             )
         )
 
-    # --- Логика разделов ---
+    # --- ЛОГИКА РАЗДЕЛОВ ---
     current_section_data = {}
     
-    def open_section(section_name):
+    def open_section(section_name, is_locked):
+        if is_locked:
+            page.show_dialog(ft.AlertDialog(
+                title=ft.Text("Раздел заблокирован"),
+                content=ft.Text("Для доступа к «Продвинутому уровню» необходимо оформить подписку Плюс или Премиум."),
+                actions=[
+                    ft.TextButton("Отмена", on_click=lambda e: page.pop_dialog()),
+                    ft.TextButton("Оформить", on_click=lambda e: (page.pop_dialog(), navigate("/subscription")))
+                ]
+            ))
+            return
+
         current_section_data.clear()
         current_section_data.update({"name": section_name, "item": DATA[section_name]})
         navigate("/section")
@@ -125,7 +141,6 @@ def main(page: ft.Page):
                     ft.Container(
                         content=ft.ListTile(
                             title=ft.Text(sub_name, weight=ft.FontWeight.W_600),
-                            # УБРАЛИ subtitle С КОЛИЧЕСТВОМ СЛОВ
                             trailing=ft.Icon(ft.Icons.PLAY_CIRCLE_FILL, color=ft.Colors.BLUE_400, size=30),
                         ),
                         bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
@@ -168,7 +183,7 @@ def main(page: ft.Page):
             ]
         )
 
-    # --- ЭКРАН 3: Карточки ---
+    # --- КАРТОЧКИ ---
     current_cards_data = {"words": [], "index": 0, "title": ""}
     
     def open_flashcards(title, sub_item):
@@ -233,7 +248,6 @@ def main(page: ft.Page):
                 ),
                 ft.Container(
                     content=ft.Column([
-                        # Сама карточка
                         ft.Container(
                             content=ft.Column([
                                 ft.Text("НОВОЕ СЛОВО" if not is_known else "ИЗУЧЕНО", size=12, weight=ft.FontWeight.BOLD, color=ft.Colors.GREEN_600 if is_known else ft.Colors.BLUE_400),
@@ -241,7 +255,6 @@ def main(page: ft.Page):
                                 ft.Text(word["en"], size=42, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER),
                                 ft.Text(f"[{word['ipa']}]", size=18, color=ft.Colors.GREY_600, italic=True),
                                 ft.Container(height=40),
-                                # Кнопка перевода
                                 ft.Button(
                                     content=ft.Row([ft.Icon(ft.Icons.VISIBILITY), ft.Text("Показать перевод")], alignment=ft.MainAxisAlignment.CENTER),
                                     on_click=lambda e: page.show_dialog(
@@ -261,12 +274,8 @@ def main(page: ft.Page):
                             expand=True
                         ),
                         ft.Container(height=20),
-                        # Навигация и действия
                         ft.Row([
-                            # Стрелка Назад
                             ft.IconButton(ft.Icons.ARROW_BACK_IOS, icon_size=30, on_click=prev_word),
-                            
-                            # Кнопки Знаю/Не знаю
                             ft.Row([
                                 ft.Button(
                                     content=ft.Icon(ft.Icons.CLOSE, color=ft.Colors.WHITE),
@@ -281,8 +290,6 @@ def main(page: ft.Page):
                                     style=ft.ButtonStyle(shape=ft.CircleBorder())
                                 ),
                             ], spacing=40),
-                            
-                            # Стрелка Вперёд
                             ft.IconButton(ft.Icons.ARROW_FORWARD_IOS, icon_size=30, on_click=next_word),
                         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, width=300)
                     ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
@@ -292,8 +299,65 @@ def main(page: ft.Page):
             ]
         )
 
-    # --- Вспомогательные экраны (Поиск, Избранное, Статистика, Подписка) ---
-    # ... (эти функции остаются без изменений, они работают отлично)
+    # --- ПОДПИСКА (С ИМИТАЦИЕЙ ОПЛАТЫ) ---
+    def subscription_view():
+        current_tier = state.license["tier"]
+        
+        def make_card(name, tier_id, price, features):
+            is_current = (tier_id == current_tier)
+            card_bg = ft.Colors.BLUE_50 if is_current else ft.Colors.SURFACE_CONTAINER_HIGHEST
+            
+            def process_payment(e):
+                # Имитация оплаты
+                dlg = ft.AlertDialog(title=ft.Text("Оплата"), content=ft.Text("Соединение с банком..."))
+                page.show_dialog(dlg)
+                
+                def finish():
+                    page.pop_dialog()
+                    state.license["tier"] = tier_id
+                    state.save_license()
+                    page.show_dialog(ft.AlertDialog(title=ft.Text("Успешно"), content=ft.Text(f"Тариф «{name}» успешно активирован!")))
+                    page.views[-1] = subscription_view() # Обновляем экран
+                    page.update()
+                
+                # Запускаем в отдельном потоке, чтобы не вешать UI
+                threading.Timer(2.0, finish).start()
+
+            btn = ft.Button(
+                content="Текущий план" if is_current else "Оформить",
+                disabled=is_current,
+                bgcolor=ft.Colors.BLUE if not is_current else ft.Colors.GREY_300,
+                color=ft.Colors.WHITE,
+                height=50,
+                on_click=process_payment
+            )
+            
+            return ft.Container(
+                content=ft.Column([
+                    ft.Text(f"{TIERS[tier_id]['icon']} {name}", size=22, weight=ft.FontWeight.BOLD),
+                    ft.Text(f"{price} ₽/мес" if price > 0 else "Бесплатно", size=28, color=ft.Colors.BLUE, weight=ft.FontWeight.BOLD),
+                    ft.Divider(),
+                    ft.Column([ft.Row([ft.Icon(ft.Icons.CHECK_CIRCLE, color=ft.Colors.GREEN, size=16), ft.Text(f, size=14)]) for f in features]),
+                    btn
+                ]),
+                bgcolor=card_bg, border_radius=20, padding=25, margin=ft.Margin(bottom=15),
+            )
+
+        return ft.View(
+            controls=[
+                ft.AppBar(title=ft.Text("Подписка"), bgcolor=ft.Colors.TRANSPARENT, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
+                ft.Container(
+                    content=ft.Column([
+                        make_card("Бесплатный", "free", 0, ["30 слов в день", "Базовый раздел"]),
+                        make_card("Плюс", "plus", 199, ["500 слов в день", "Все разделы", "Продвинутый уровень"]),
+                        make_card("Премиум", "premium", 499, ["Безлимит", "Экспорт прогресса", "Поддержка"]),
+                    ], scroll=ft.ScrollMode.AUTO),
+                    padding=20, expand=True
+                )
+            ]
+        )
+
+    # --- ВСПОМОГАТЕЛЬНЫЕ ЭКРАНЫ ---
     def search_view():
         results_list = ft.Column(spacing=10)
         def on_search(e):
@@ -327,16 +391,6 @@ def main(page: ft.Page):
             controls=[ft.AppBar(title=ft.Text("Статистика"), bgcolor=ft.Colors.TRANSPARENT, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))), ft.Container(content=ft.Column([ft.Container(content=ft.ListTile(leading=ft.Text("🔥", size=30), title=ft.Text("Серия дней", weight=ft.FontWeight.BOLD), subtitle=ft.Text(f"{streak} дн.")), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, margin=5), ft.Container(content=ft.ListTile(leading=ft.Text("📖", size=30), title=ft.Text("Изучено", weight=ft.FontWeight.BOLD), subtitle=ft.Text(f"{known_count} из {total_count}")), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, margin=5), ft.Container(content=ft.ListTile(leading=ft.Text("⭐", size=30), title=ft.Text("Избранное", weight=ft.FontWeight.BOLD), subtitle=ft.Text(str(len(state.progress["favorites"])))), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, margin=5)], scroll=ft.ScrollMode.AUTO), padding=20, expand=True)],
             navigation_bar=ft.NavigationBar(destinations=[ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationBarDestination(icon=ft.Icons.BAR_CHART, label="Статистика")], selected_index=3, on_change=lambda e: navigate(["/", "/search", "/favorites", "/stats"][e.control.selected_index]))
         )
-
-    def subscription_view():
-        current_tier = state.license["tier"]
-        def make_card_safe(name, tier_id, price, features):
-            is_current = (tier_id == current_tier); card_bg = ft.Colors.BLUE_50 if is_current else ft.Colors.SURFACE_CONTAINER_HIGHEST
-            return ft.Container(
-                content=ft.Column([ft.Text(f"{TIERS[tier_id]['icon']} {name}", size=22, weight=ft.FontWeight.BOLD), ft.Text(f"{price} ₽/мес" if price > 0 else "Бесплатно", size=28, color=ft.Colors.BLUE, weight=ft.FontWeight.BOLD), ft.Divider(), ft.Column([ft.Row([ft.Icon(ft.Icons.CHECK_CIRCLE, color=ft.Colors.GREEN, size=16), ft.Text(f, size=14)]) for f in features]), ft.Button(content="Текущий план" if is_current else "Оформить", disabled=is_current, bgcolor=ft.Colors.BLUE if not is_current else ft.Colors.GREY_300, color=ft.Colors.WHITE, height=50)]),
-                bgcolor=card_bg, border_radius=20, padding=25, margin=ft.Margin(bottom=15),
-            )
-        return ft.View(controls=[ft.AppBar(title=ft.Text("Подписка"), bgcolor=ft.Colors.TRANSPARENT, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))), ft.Container(content=ft.Column([make_card_safe("Бесплатный", "free", 0, ["30 слов в день", "Базовый раздел"]), make_card_safe("Плюс", "plus", 199, ["500 слов в день", "Все разделы", "Тесты"]), make_card_safe("Премиум", "premium", 499, ["Безлимит", "Экспорт прогресса", "Поддержка"])], scroll=ft.ScrollMode.AUTO), padding=20, expand=True)])
 
     navigate("/")
 
