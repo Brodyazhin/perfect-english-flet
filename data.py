@@ -1,8 +1,8 @@
 # data.py
 
 DATA = {
-    "База": {
-        "color": "#7c9cf5", "icon": "📘", "desc": "Алфавит, числа, цвета, местоимения",
+    "1. База": {
+        "color": "#7c9cf5", "icon": "📘", "desc": "Стартовый уровень: буквы, числа, цвета",
         "subsections": {
             "Алфавит": {"words": [
                 {"en": "A a", "ipa": "eɪ", "ru": "эй", "say": "A"}, {"en": "B b", "ipa": "biː", "ru": "би", "say": "B"},
@@ -19,84 +19,43 @@ DATA = {
                 {"en": "W w", "ipa": "ˈdʌb.əl.juː", "ru": "дабл-ю", "say": "W"}, {"en": "X x", "ipa": "eks", "ru": "экс", "say": "X"},
                 {"en": "Y y", "ipa": "waɪ", "ru": "уай", "say": "Y"}, {"en": "Z z", "ipa": "zed / ziː", "ru": "зэд / зи", "say": "Z"},
             ]},
-            "Числа": {"subsections": {
-                "0 — 10": {"words": [
-                    {"en": "zero", "ipa": "ˈzɪə.rəʊ", "ru": "ноль"}, {"en": "one", "ipa": "wʌn", "ru": "один"},
-                    {"en": "two", "ipa": "tuː", "ru": "два"}, {"en": "three", "ipa": "θriː", "ru": "три"},
-                    {"en": "four", "ipa": "fɔːr", "ru": "четыре"}, {"en": "five", "ipa": "faɪv", "ru": "пять"},
-                    {"en": "six", "ipa": "sɪks", "ru": "шесть"}, {"en": "seven", "ipa": "ˈsevn", "ru": "семь"},
-                    {"en": "eight", "ipa": "eɪt", "ru": "восемь"}, {"en": "nine", "ipa": "naɪn", "ru": "девять"},
-                    {"en": "ten", "ipa": "ten", "ru": "десять"},
-                ]},
-                "11 — 20": {"words": [
-                    {"en": "eleven", "ipa": "ɪˈlevn", "ru": "одиннадцать"}, {"en": "twelve", "ipa": "twelv", "ru": "двенадцать"},
-                    {"en": "thirteen", "ipa": "ˌθɜːˈtiːn", "ru": "тринадцать"}, {"en": "fourteen", "ipa": "ˌfɔːˈtiːn", "ru": "четырнадцать"},
-                    {"en": "fifteen", "ipa": "ˌfɪfˈtiːn", "ru": "пятнадцать"}, {"en": "sixteen", "ipa": "ˌsɪksˈtiːn", "ru": "шестнадцать"},
-                    {"en": "seventeen", "ipa": "ˌsevnˈtiːn", "ru": "семнадцать"}, {"en": "eighteen", "ipa": "ˌeɪˈtiːn", "ru": "восемнадцать"},
-                    {"en": "nineteen", "ipa": "ˌnaɪnˈtiːn", "ru": "девятнадцать"}, {"en": "twenty", "ipa": "ˈtwen.ti", "ru": "двадцать"},
-                ]},
-                "Десятки": {"words": [
-                    {"en": "thirty", "ipa": "ˈθɜː.ti", "ru": "тридцать"}, {"en": "forty", "ipa": "ˈfɔː.ti", "ru": "сорок"},
-                    {"en": "fifty", "ipa": "ˈfɪf.ti", "ru": "пятьдесят"}, {"en": "sixty", "ipa": "ˈsɪks.ti", "ru": "шестьдесят"},
-                    {"en": "seventy", "ipa": "ˈsev.n.ti", "ru": "семьдесят"}, {"en": "eighty", "ipa": "ˈeɪ.ti", "ru": "восемьдесят"},
-                    {"en": "ninety", "ipa": "ˈnaɪn.ti", "ru": "девяносто"},
-                ]},
-                "Большие числа": {"words": [
-                    {"en": "hundred", "ipa": "ˈhʌn.drəd", "ru": "сто"}, {"en": "thousand", "ipa": "ˈθaʊ.znd", "ru": "тысяча"},
-                    {"en": "million", "ipa": "ˈmɪl.jən", "ru": "миллион"}, {"en": "billion", "ipa": "ˈbɪl.jən", "ru": "миллиард"},
-                ]},
-                "Порядковые": {"words": [
-                    {"en": "first", "ipa": "fɜːst", "ru": "первый"}, {"en": "second", "ipa": "ˈsek.ənd", "ru": "второй"},
-                    {"en": "third", "ipa": "θɜːd", "ru": "третий"}, {"en": "fourth", "ipa": "fɔːθ", "ru": "четвёртый"},
-                    {"en": "fifth", "ipa": "fɪfθ", "ru": "пятый"}, {"en": "sixth", "ipa": "sɪksθ", "ru": "шестой"},
-                    {"en": "seventh", "ipa": "ˈsev.nθ", "ru": "седьмой"}, {"en": "eighth", "ipa": "eɪtθ", "ru": "восьмой"},
-                    {"en": "ninth", "ipa": "naɪnθ", "ru": "девятый"}, {"en": "tenth", "ipa": "tenθ", "ru": "десятый"},
-                ]},
-            }},
+            "Числа 1-10": {"words": [
+                {"en": "zero", "ipa": "ˈzɪə.rəʊ", "ru": "ноль"}, {"en": "one", "ipa": "wʌn", "ru": "один"},
+                {"en": "two", "ipa": "tuː", "ru": "два"}, {"en": "three", "ipa": "θriː", "ru": "три"},
+                {"en": "four", "ipa": "fɔːr", "ru": "четыре"}, {"en": "five", "ipa": "faɪv", "ru": "пять"},
+                {"en": "six", "ipa": "sɪks", "ru": "шесть"}, {"en": "seven", "ipa": "ˈsevn", "ru": "семь"},
+                {"en": "eight", "ipa": "eɪt", "ru": "восемь"}, {"en": "nine", "ipa": "naɪn", "ru": "девять"},
+                {"en": "ten", "ipa": "ten", "ru": "десять"},
+            ]},
             "Цвета": {"words": [
-                {"en": "color / colour", "ipa": "ˈkʌl.ər", "ru": "цвет"}, {"en": "red", "ipa": "red", "ru": "красный"},
+                {"en": "color", "ipa": "ˈkʌl.ər", "ru": "цвет"}, {"en": "red", "ipa": "red", "ru": "красный"},
                 {"en": "orange", "ipa": "ˈɒr.ɪndʒ", "ru": "оранжевый"}, {"en": "yellow", "ipa": "ˈjel.əʊ", "ru": "жёлтый"},
                 {"en": "green", "ipa": "ɡriːn", "ru": "зелёный"}, {"en": "blue", "ipa": "bluː", "ru": "синий"},
                 {"en": "purple", "ipa": "ˈpɜː.pl̩", "ru": "фиолетовый"}, {"en": "pink", "ipa": "pɪŋk", "ru": "розовый"},
                 {"en": "brown", "ipa": "braʊn", "ru": "коричневый"}, {"en": "black", "ipa": "blæk", "ru": "чёрный"},
-                {"en": "white", "ipa": "waɪt", "ru": "белый"}, {"en": "grey / gray", "ipa": "ɡreɪ", "ru": "серый"},
+                {"en": "white", "ipa": "waɪt", "ru": "белый"},
             ]},
-            "Местоимения": {"subsections": {
-                "Личные": {"words": [
-                    {"en": "I", "ipa": "aɪ", "ru": "я"}, {"en": "you", "ipa": "juː", "ru": "ты / вы"},
-                    {"en": "he", "ipa": "hiː", "ru": "он"}, {"en": "she", "ipa": "ʃiː", "ru": "она"},
-                    {"en": "it", "ipa": "ɪt", "ru": "оно"}, {"en": "we", "ipa": "wiː", "ru": "мы"}, {"en": "they", "ipa": "ðeɪ", "ru": "они"},
-                ]},
-                "Притяжательные": {"words": [
-                    {"en": "my", "ipa": "maɪ", "ru": "мой"}, {"en": "your", "ipa": "jɔːr", "ru": "твой / ваш"},
-                    {"en": "his", "ipa": "hɪz", "ru": "его"}, {"en": "her", "ipa": "hɜːr", "ru": "её"},
-                    {"en": "its", "ipa": "ɪts", "ru": "его / её"}, {"en": "our", "ipa": "ˈaʊər", "ru": "наш"}, {"en": "their", "ipa": "ðeər", "ru": "их"},
-                ]},
-            }},
+            "Местоимения": {"words": [
+                {"en": "I", "ipa": "aɪ", "ru": "я"}, {"en": "you", "ipa": "juː", "ru": "ты / вы"},
+                {"en": "he", "ipa": "hiː", "ru": "он"}, {"en": "she", "ipa": "ʃiː", "ru": "она"},
+                {"en": "it", "ipa": "ɪt", "ru": "оно"}, {"en": "we", "ipa": "wiː", "ru": "мы"}, {"en": "they", "ipa": "ðeɪ", "ru": "они"},
+            ]},
         },
     },
-    "Словарный запас": {
-        "color": "#e88fa8", "icon": "📚", "desc": "Семья, профессии, животные, еда, дом, тело",
+    "2. Словарный запас": {
+        "color": "#e88fa8", "icon": "📚", "desc": "Повседневные слова: семья, дом, еда",
         "subsections": {
             "Семья": {"words": [
                 {"en": "mother", "ipa": "ˈmʌð.ər", "ru": "мама"}, {"en": "father", "ipa": "ˈfɑː.ðər", "ru": "папа"},
                 {"en": "sister", "ipa": "ˈsɪs.tər", "ru": "сестра"}, {"en": "brother", "ipa": "ˈbrʌð.ər", "ru": "брат"},
                 {"en": "son", "ipa": "sʌn", "ru": "сын"}, {"en": "daughter", "ipa": "ˈdɔː.tər", "ru": "дочь"},
                 {"en": "wife", "ipa": "waɪf", "ru": "жена"}, {"en": "husband", "ipa": "ˈhʌz.bənd", "ru": "муж"},
-                {"en": "grandmother", "ipa": "ˈɡræn.mʌð.ər", "ru": "бабушка"}, {"en": "grandfather", "ipa": "ˈɡræn.fɑː.ðər", "ru": "дедушка"},
-            ]},
-            "Профессии": {"words": [
-                {"en": "doctor", "ipa": "ˈdɒk.tər", "ru": "врач"}, {"en": "teacher", "ipa": "ˈtiː.tʃər", "ru": "учитель"},
-                {"en": "engineer", "ipa": "ˌen.dʒɪˈnɪər", "ru": "инженер"}, {"en": "programmer", "ipa": "ˈprəʊ.ɡræm.ər", "ru": "программист"},
-                {"en": "driver", "ipa": "ˈdraɪ.vər", "ru": "водитель"}, {"en": "cook", "ipa": "kʊk", "ru": "повар"},
-                {"en": "builder", "ipa": "ˈbɪl.dər", "ru": "строитель"}, {"en": "farmer", "ipa": "ˈfɑː.mər", "ru": "фермер"},
             ]},
             "Животные": {"words": [
                 {"en": "dog", "ipa": "dɒɡ", "ru": "собака"}, {"en": "cat", "ipa": "kæt", "ru": "кошка"},
                 {"en": "horse", "ipa": "hɔːs", "ru": "лошадь"}, {"en": "cow", "ipa": "kaʊ", "ru": "корова"},
-                {"en": "pig", "ipa": "pɪɡ", "ru": "свинья"}, {"en": "chicken", "ipa": "ˈtʃɪk.ɪn", "ru": "курица"},
-                {"en": "lion", "ipa": "ˈlaɪ.ən", "ru": "лев"}, {"en": "tiger", "ipa": "ˈtaɪ.ɡər", "ru": "тигр"},
-                {"en": "bear", "ipa": "beər", "ru": "медведь"}, {"en": "wolf", "ipa": "wʊlf", "ru": "волк"},
+                {"en": "pig", "ipa": "pɪɡ", "ru": "свинья"}, {"en": "lion", "ipa": "ˈlaɪ.ən", "ru": "лев"},
+                {"en": "tiger", "ipa": "ˈtaɪ.ɡər", "ru": "тигр"}, {"en": "bear", "ipa": "beər", "ru": "медведь"},
             ]},
             "Еда": {"words": [
                 {"en": "apple", "ipa": "ˈæp.əl", "ru": "яблоко"}, {"en": "banana", "ipa": "bəˈnɑː.nə", "ru": "банан"},
@@ -110,7 +69,6 @@ DATA = {
                 {"en": "kitchen", "ipa": "ˈkɪtʃ.ɪn", "ru": "кухня"}, {"en": "bedroom", "ipa": "ˈbed.ruːm", "ru": "спальня"},
                 {"en": "bathroom", "ipa": "ˈbɑːθ.ruːm", "ru": "ванная"}, {"en": "table", "ipa": "ˈteɪ.bl̩", "ru": "стол"},
                 {"en": "chair", "ipa": "tʃeər", "ru": "стул"}, {"en": "bed", "ipa": "bed", "ru": "кровать"},
-                {"en": "door", "ipa": "dɔːr", "ru": "дверь"}, {"en": "window", "ipa": "ˈwɪn.dəʊ", "ru": "окно"},
             ]},
             "Одежда": {"words": [
                 {"en": "clothes", "ipa": "kləʊðz", "ru": "одежда"}, {"en": "shirt", "ipa": "ʃɜːt", "ru": "рубашка"},
@@ -118,66 +76,44 @@ DATA = {
                 {"en": "jeans", "ipa": "dʒiːnz", "ru": "джинсы"}, {"en": "jacket", "ipa": "ˈdʒæk.ɪt", "ru": "куртка"},
                 {"en": "shoes", "ipa": "ʃuːz", "ru": "обувь"}, {"en": "hat", "ipa": "hæt", "ru": "шляпа"},
             ]},
-            "Тело": {"words": [
-                {"en": "head", "ipa": "hed", "ru": "голова"}, {"en": "eye", "ipa": "aɪ", "ru": "глаз"},
-                {"en": "ear", "ipa": "ɪər", "ru": "ухо"}, {"en": "nose", "ipa": "nəʊz", "ru": "нос"},
-                {"en": "mouth", "ipa": "maʊθ", "ru": "рот"}, {"en": "hand", "ipa": "hænd", "ru": "рука"},
-                {"en": "leg", "ipa": "leɡ", "ru": "нога"}, {"en": "heart", "ipa": "hɑːt", "ru": "сердце"},
+        },
+    },
+    "3. Фразы": {
+        "color": "#7bc9b8", "icon": "💬", "desc": "Учимся говорить: приветствия, вежливость",
+        "subsections": {
+            "Приветствие": {"words": [
+                {"en": "Hello!", "ipa": "həˈloʊ", "ru": "Привет!"}, {"en": "Good morning!", "ipa": "ɡʊd ˈmɔːr.nɪŋ", "ru": "Доброе утро!"},
+                {"en": "Good afternoon!", "ipa": "ɡʊd ˌɑːf.təˈnuːn", "ru": "Добрый день!"}, {"en": "Good evening!", "ipa": "ɡʊd ˈiːv.nɪŋ", "ru": "Добрый вечер!"},
+                {"en": "How are you?", "ipa": "haʊ ɑːr juː", "ru": "Как дела?"}, {"en": "Goodbye!", "ipa": "ɡʊdˈbaɪ", "ru": "До свидания!"},
             ]},
-            "Школа": {"words": [
-                {"en": "school", "ipa": "skuːl", "ru": "школа"}, {"en": "teacher", "ipa": "ˈtiː.tʃər", "ru": "учитель"},
-                {"en": "student", "ipa": "ˈstjuː.dənt", "ru": "ученик"}, {"en": "book", "ipa": "bʊk", "ru": "книга"},
-                {"en": "pen", "ipa": "pen", "ru": "ручка"}, {"en": "pencil", "ipa": "ˈpen.sl̩", "ru": "карандаш"},
-                {"en": "lesson", "ipa": "ˈles.n̩", "ru": "урок"}, {"en": "homework", "ipa": "ˈhəʊm.wɜːk", "ru": "домашнее задание"},
+            "Вежливость": {"words": [
+                {"en": "Thank you", "ipa": "θæŋk juː", "ru": "Спасибо"}, {"en": "Please", "ipa": "pliːz", "ru": "Пожалуйста"},
+                {"en": "Sorry", "ipa": "ˈsɒr. i", "ru": "Извините"}, {"en": "Excuse me", "ipa": "ɪkˈskjuːz miː", "ru": "Простите"},
+                {"en": "No problem", "ipa": "noʊ ˈprɒb.ləm", "ru": "Без проблем"},
             ]},
-            "Время": {"words": [
-                {"en": "Monday", "ipa": "ˈmʌn.deɪ", "ru": "понедельник"}, {"en": "Tuesday", "ipa": "ˈtjuːz.deɪ", "ru": "вторник"},
-                {"en": "Wednesday", "ipa": "ˈwenz.deɪ", "ru": "среда"}, {"en": "Thursday", "ipa": "ˈθɜːz.deɪ", "ru": "четверг"},
-                {"en": "Friday", "ipa": "ˈfraɪ.deɪ", "ru": "пятница"}, {"en": "Saturday", "ipa": "ˈsæt.ə.deɪ", "ru": "суббота"},
-                {"en": "Sunday", "ipa": "ˈsʌn.deɪ", "ru": "воскресенье"}, {"en": "year", "ipa": "jɪər", "ru": "год"},
+            "Знакомство": {"words": [
+                {"en": "What's your name?", "ipa": "wɒts jɔːr neɪm", "ru": "Как тебя зовут?"},
+                {"en": "My name is Anna.", "ipa": "maɪ neɪm ɪz ˈæn.ə", "ru": "Меня зовут Анна."},
+                {"en": "Where are you from?", "ipa": "weər ɑːr juː frɒm", "ru": "Откуда ты?"},
+                {"en": "I'm from Russia.", "ipa": "aɪm frɒm ˈrʌʃ.ə", "ru": "Я из России."},
             ]},
         },
     },
-    "Идиомы": {
-        "color": "#cba6f7", "icon": "🧩", "desc": "Популярные английские выражения",
+    "4. Продвинутый уровень": {
+        "color": "#cba6f7", "icon": "🚀", "desc": "Идиомы, путешествия и фразы для общения",
         "subsections": {
-            "Повседневные": {"words": [
+            "Идиомы": {"words": [
                 {"en": "Hit the sack", "ipa": "hɪt ðə sæk", "ru": "Отправиться спать"},
-                {"en": "Twist someone's arm", "ipa": "twɪst ˈsʌm.wʌnz ɑːrm", "ru": "Уговорить, заставить"},
-                {"en": "Stab someone in the back", "ipa": "stæb ˈsʌm.wʌn ɪn ðə bæk", "ru": "Предать, ударить в спину"},
-                {"en": "Lose your touch", "ipa": "luːz jɔːr tʌtʃ", "ru": "Потерять хватку"},
-                {"en": "Sit tight", "ipa": "sɪt taɪt", "ru": "Терпеливо ждать"},
-            ]},
-            "Еда и учеба": {"words": [
+                {"en": "Twist someone's arm", "ipa": "twɪst ˈsʌm.wʌnz ɑːrm", "ru": "Уговорить"},
                 {"en": "Hit the books", "ipa": "hɪt ðə bʊks", "ru": "Усердно учиться"},
-                {"en": "Spill the beans", "ipa": "spɪl ðə biːnz", "ru": "Проговориться, выдать секрет"},
-                {"en": "Cool as a cucumber", "ipa": "kuːl æz ə ˈkjuː.kʌm.bər", "ru": "Спокойный, как удав"},
+                {"en": "Spill the beans", "ipa": "spɪl ðə biːnz", "ru": "Выдать секрет"},
+                {"en": "Cool as a cucumber", "ipa": "kuːl æz ə ˈkjuː.kʌm.bər", "ru": "Спокойный"},
             ]},
-        },
-    },
-    "Путешествия": {
-        "color": "#f9e2af", "icon": "✈️", "desc": "Фразы для поездок",
-        "subsections": {
             "В аэропорту": {"words": [
                 {"en": "Where is the gate?", "ipa": "weər ɪz ðə ɡeɪt", "ru": "Где выход на посадку?"},
                 {"en": "I have a connecting flight.", "ipa": "aɪ hæv ə kəˈnek.tɪŋ flaɪt", "ru": "У меня стыковочный рейс."},
                 {"en": "Is it a direct flight?", "ipa": "ɪz ɪt ə dəˈrekt flaɪt", "ru": "Это прямой рейс?"},
                 {"en": "My luggage is lost.", "ipa": "maɪ ˈlʌɡ.ɪdʒ ɪz lɒst", "ru": "Мой багаж потерялся."},
-            ]},
-        },
-    },
-    "Фразы": {
-        "color": "#7bc9b8", "icon": "💬", "desc": "Готовые фразы для общения",
-        "subsections": {
-            "Приветствие": {"words": [
-                {"en": "Hello!", "ipa": "həˈloʊ", "ru": "Привет!"}, {"en": "Good morning!", "ipa": "ɡʊd ˈmɔːr.nɪŋ", "ru": "Доброе утро!"},
-                {"en": "Good evening!", "ipa": "ɡʊd ˈiːv.nɪŋ", "ru": "Добрый вечер!"}, {"en": "How are you?", "ipa": "haʊ ɑːr juː", "ru": "Как дела?"},
-                {"en": "Goodbye!", "ipa": "ɡʊdˈbaɪ", "ru": "До свидания!"},
-            ]},
-            "Вежливость": {"words": [
-                {"en": "Thank you", "ipa": "θæŋk juː", "ru": "Спасибо"}, {"en": "Please", "ipa": "pliːz", "ru": "Пожалуйста"},
-                {"en": "Sorry", "ipa": "ˈsɒr.i", "ru": "Извините"}, {"en": "Excuse me", "ipa": "ɪkˈskjuːz miː", "ru": "Простите"},
-                {"en": "No problem", "ipa": "noʊ ˈprɒb.ləm", "ru": "Без проблем"},
             ]},
         },
     },
