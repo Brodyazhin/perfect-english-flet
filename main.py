@@ -47,7 +47,7 @@ def main(page: ft.Page):
                             alignment=ft.Alignment.CENTER
                         ),
                         title=ft.Text(name, weight=ft.FontWeight.BOLD, size=16),
-                        subtitle=ft.Text(f"{count_words(item)} слов", color=ft.Colors.GREY_600),
+                        subtitle=ft.Text(item["desc"], color=ft.Colors.GREY_600, size=12),
                         trailing=ft.Icon(ft.Icons.CHEVRON_RIGHT, color=ft.Colors.GREY_400),
                     ),
                     bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
@@ -125,7 +125,7 @@ def main(page: ft.Page):
                     ft.Container(
                         content=ft.ListTile(
                             title=ft.Text(sub_name, weight=ft.FontWeight.W_600),
-                            subtitle=ft.Text(f"{count_words(sub_item)} слов", color=ft.Colors.GREY_600),
+                            # УБРАЛИ subtitle С КОЛИЧЕСТВОМ СЛОВ
                             trailing=ft.Icon(ft.Icons.PLAY_CIRCLE_FILL, color=ft.Colors.BLUE_400, size=30),
                         ),
                         bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
@@ -197,6 +197,11 @@ def main(page: ft.Page):
             page.views[-1] = flashcards_view()
             page.update()
 
+        def prev_word(e):
+            current_cards_data["index"] = (current_cards_data["index"] - 1) % len(current_cards_data["words"])
+            page.views[-1] = flashcards_view()
+            page.update()
+
         def mark_known(e):
             if not is_known:
                 state.progress["known"].append(word["en"])
@@ -255,20 +260,31 @@ def main(page: ft.Page):
                             shadow=ft.BoxShadow(blur_radius=30, color=ft.Colors.with_opacity(0.1, ft.Colors.BLACK), offset=ft.Offset(0, 10)),
                             expand=True
                         ),
-                        ft.Container(height=30),
-                        # Кнопки управления
+                        ft.Container(height=20),
+                        # Навигация и действия
                         ft.Row([
-                            ft.Button( # <-- ИСПРАВЛЕНО
-                                content=ft.Row([ft.Icon(ft.Icons.CLOSE, color=ft.Colors.WHITE), ft.Text("Не знаю", color=ft.Colors.WHITE, weight=ft.FontWeight.BOLD)]),
-                                bgcolor=ft.Colors.RED_400, on_click=next_word, expand=True, height=60,
-                                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=15))
-                            ),
-                            ft.Button( # <-- ИСПРАВЛЕНО
-                                content=ft.Row([ft.Icon(ft.Icons.CHECK, color=ft.Colors.WHITE), ft.Text("Знаю", color=ft.Colors.WHITE, weight=ft.FontWeight.BOLD)]),
-                                bgcolor=ft.Colors.GREEN_400, on_click=mark_known, expand=True, height=60,
-                                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=15))
-                            ),
-                        ], spacing=20)
+                            # Стрелка Назад
+                            ft.IconButton(ft.Icons.ARROW_BACK_IOS, icon_size=30, on_click=prev_word),
+                            
+                            # Кнопки Знаю/Не знаю
+                            ft.Row([
+                                ft.Button(
+                                    content=ft.Icon(ft.Icons.CLOSE, color=ft.Colors.WHITE),
+                                    bgcolor=ft.Colors.RED_400, on_click=next_word,
+                                    width=60, height=60,
+                                    style=ft.ButtonStyle(shape=ft.CircleBorder())
+                                ),
+                                ft.Button(
+                                    content=ft.Icon(ft.Icons.CHECK, color=ft.Colors.WHITE),
+                                    bgcolor=ft.Colors.GREEN_400, on_click=mark_known,
+                                    width=60, height=60,
+                                    style=ft.ButtonStyle(shape=ft.CircleBorder())
+                                ),
+                            ], spacing=40),
+                            
+                            # Стрелка Вперёд
+                            ft.IconButton(ft.Icons.ARROW_FORWARD_IOS, icon_size=30, on_click=next_word),
+                        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, width=300)
                     ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                     padding=20,
                     expand=True
@@ -277,6 +293,7 @@ def main(page: ft.Page):
         )
 
     # --- Вспомогательные экраны (Поиск, Избранное, Статистика, Подписка) ---
+    # ... (эти функции остаются без изменений, они работают отлично)
     def search_view():
         results_list = ft.Column(spacing=10)
         def on_search(e):
@@ -286,101 +303,40 @@ def main(page: ft.Page):
             words = all_words_flat()
             found = [w for w in words if query in w["en"].lower() or query in w["ru"].lower()][:30]
             for w in found:
-                results_list.controls.append(
-                    ft.Container(
-                        content=ft.ListTile(title=ft.Text(w["en"], weight=ft.FontWeight.BOLD), subtitle=ft.Text(w["ru"])),
-                        bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, padding=5
-                    )
-                )
+                results_list.controls.append(ft.Container(content=ft.ListTile(title=ft.Text(w["en"], weight=ft.FontWeight.BOLD), subtitle=ft.Text(w["ru"])), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, padding=5))
             page.update()
 
         return ft.View(
             controls=[
                 ft.AppBar(title=ft.Text("Поиск"), bgcolor=ft.Colors.TRANSPARENT, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
-                ft.Container(
-                    content=ft.Column([
-                        ft.TextField(hint_text="Введите слово...", on_change=on_search, prefix_icon=ft.Icons.SEARCH, border_radius=15, filled=True),
-                        ft.Container(height=10),
-                        ft.Column([results_list], scroll=ft.ScrollMode.AUTO, expand=True)
-                    ]),
-                    padding=20, expand=True
-                )
+                ft.Container(content=ft.Column([ft.TextField(hint_text="Введите слово...", on_change=on_search, prefix_icon=ft.Icons.SEARCH, border_radius=15, filled=True), ft.Container(height=10), ft.Column([results_list], scroll=ft.ScrollMode.AUTO, expand=True)]), padding=20, expand=True)
             ]
         )
 
     def favorites_view():
         fav_words = [w for w in all_words_flat() if w["en"] in state.progress["favorites"]]
-        items = []
-        if not fav_words:
-            items.append(ft.Text("Вы пока не добавили слова в избранное", color=ft.Colors.GREY_600))
-        else:
-            for w in fav_words:
-                items.append(ft.Container(content=ft.ListTile(title=ft.Text(w["en"], weight=ft.FontWeight.BOLD), subtitle=ft.Text(w["ru"])), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, padding=5, margin=ft.Margin(bottom=5)))
-                
+        items = [ft.Container(content=ft.ListTile(title=ft.Text(w["en"], weight=ft.FontWeight.BOLD), subtitle=ft.Text(w["ru"])), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, padding=5, margin=ft.Margin(bottom=5)) for w in fav_words] if fav_words else [ft.Text("Вы пока не добавили слова в избранное", color=ft.Colors.GREY_600)]
         return ft.View(
-            controls=[
-                ft.AppBar(title=ft.Text("Избранное"), bgcolor=ft.Colors.TRANSPARENT, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
-                ft.Container(content=ft.Column(items, scroll=ft.ScrollMode.AUTO, expand=True), padding=20, expand=True)
-            ],
-            navigation_bar=ft.NavigationBar(
-                destinations=[ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationBarDestination(icon=ft.Icons.BAR_CHART, label="Статистика")],
-                selected_index=2, on_change=lambda e: navigate(["/", "/search", "/favorites", "/stats"][e.control.selected_index])
-            )
+            controls=[ft.AppBar(title=ft.Text("Избранное"), bgcolor=ft.Colors.TRANSPARENT, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))), ft.Container(content=ft.Column(items, scroll=ft.ScrollMode.AUTO, expand=True), padding=20, expand=True)],
+            navigation_bar=ft.NavigationBar(destinations=[ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationBarDestination(icon=ft.Icons.BAR_CHART, label="Статистика")], selected_index=2, on_change=lambda e: navigate(["/", "/search", "/favorites", "/stats"][e.control.selected_index]))
         )
 
     def stats_view():
-        known_count = len(state.progress["known"])
-        total_count = len(all_words_flat())
-        streak = state.progress.get("streak", 0)
-        
+        known_count = len(state.progress["known"]); total_count = len(all_words_flat()); streak = state.progress.get("streak", 0)
         return ft.View(
-            controls=[
-                ft.AppBar(title=ft.Text("Статистика"), bgcolor=ft.Colors.TRANSPARENT, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
-                ft.Container(
-                    content=ft.Column([
-                        ft.Container(content=ft.ListTile(leading=ft.Text("🔥", size=30), title=ft.Text("Серия дней", weight=ft.FontWeight.BOLD), subtitle=ft.Text(f"{streak} дн.")), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, margin=5),
-                        ft.Container(content=ft.ListTile(leading=ft.Text("📖", size=30), title=ft.Text("Изучено", weight=ft.FontWeight.BOLD), subtitle=ft.Text(f"{known_count} из {total_count}")), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, margin=5),
-                        ft.Container(content=ft.ListTile(leading=ft.Text("⭐", size=30), title=ft.Text("Избранное", weight=ft.FontWeight.BOLD), subtitle=ft.Text(str(len(state.progress["favorites"])))), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, margin=5),
-                    ], scroll=ft.ScrollMode.AUTO),
-                    padding=20, expand=True
-                )
-            ],
-            navigation_bar=ft.NavigationBar(
-                destinations=[ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationBarDestination(icon=ft.Icons.BAR_CHART, label="Статистика")],
-                selected_index=3, on_change=lambda e: navigate(["/", "/search", "/favorites", "/stats"][e.control.selected_index])
-            )
+            controls=[ft.AppBar(title=ft.Text("Статистика"), bgcolor=ft.Colors.TRANSPARENT, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))), ft.Container(content=ft.Column([ft.Container(content=ft.ListTile(leading=ft.Text("🔥", size=30), title=ft.Text("Серия дней", weight=ft.FontWeight.BOLD), subtitle=ft.Text(f"{streak} дн.")), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, margin=5), ft.Container(content=ft.ListTile(leading=ft.Text("📖", size=30), title=ft.Text("Изучено", weight=ft.FontWeight.BOLD), subtitle=ft.Text(f"{known_count} из {total_count}")), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, margin=5), ft.Container(content=ft.ListTile(leading=ft.Text("⭐", size=30), title=ft.Text("Избранное", weight=ft.FontWeight.BOLD), subtitle=ft.Text(str(len(state.progress["favorites"])))), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, margin=5)], scroll=ft.ScrollMode.AUTO), padding=20, expand=True)],
+            navigation_bar=ft.NavigationBar(destinations=[ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationBarDestination(icon=ft.Icons.BAR_CHART, label="Статистика")], selected_index=3, on_change=lambda e: navigate(["/", "/search", "/favorites", "/stats"][e.control.selected_index]))
         )
 
     def subscription_view():
         current_tier = state.license["tier"]
-        
         def make_card_safe(name, tier_id, price, features):
-            is_current = (tier_id == current_tier)
-            card_bg = ft.Colors.BLUE_50 if is_current else ft.Colors.SURFACE_CONTAINER_HIGHEST
+            is_current = (tier_id == current_tier); card_bg = ft.Colors.BLUE_50 if is_current else ft.Colors.SURFACE_CONTAINER_HIGHEST
             return ft.Container(
-                content=ft.Column([
-                    ft.Text(f"{TIERS[tier_id]['icon']} {name}", size=22, weight=ft.FontWeight.BOLD),
-                    ft.Text(f"{price} ₽/мес" if price > 0 else "Бесплатно", size=28, color=ft.Colors.BLUE, weight=ft.FontWeight.BOLD),
-                    ft.Divider(),
-                    ft.Column([ft.Row([ft.Icon(ft.Icons.CHECK_CIRCLE, color=ft.Colors.GREEN, size=16), ft.Text(f, size=14)]) for f in features]),
-                    ft.Button(content="Текущий план" if is_current else "Оформить", disabled=is_current, bgcolor=ft.Colors.BLUE if not is_current else ft.Colors.GREY_300, color=ft.Colors.WHITE, height=50),
-                ]),
+                content=ft.Column([ft.Text(f"{TIERS[tier_id]['icon']} {name}", size=22, weight=ft.FontWeight.BOLD), ft.Text(f"{price} ₽/мес" if price > 0 else "Бесплатно", size=28, color=ft.Colors.BLUE, weight=ft.FontWeight.BOLD), ft.Divider(), ft.Column([ft.Row([ft.Icon(ft.Icons.CHECK_CIRCLE, color=ft.Colors.GREEN, size=16), ft.Text(f, size=14)]) for f in features]), ft.Button(content="Текущий план" if is_current else "Оформить", disabled=is_current, bgcolor=ft.Colors.BLUE if not is_current else ft.Colors.GREY_300, color=ft.Colors.WHITE, height=50)]),
                 bgcolor=card_bg, border_radius=20, padding=25, margin=ft.Margin(bottom=15),
             )
-
-        return ft.View(
-            controls=[
-                ft.AppBar(title=ft.Text("Подписка"), bgcolor=ft.Colors.TRANSPARENT, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
-                ft.Container(
-                    content=ft.Column([
-                        make_card_safe("Бесплатный", "free", 0, ["30 слов в день", "Базовый раздел"]),
-                        make_card_safe("Плюс", "plus", 199, ["500 слов в день", "Все разделы", "Тесты"]),
-                        make_card_safe("Премиум", "premium", 499, ["Безлимит", "Экспорт прогресса", "Поддержка"]),
-                    ], scroll=ft.ScrollMode.AUTO),
-                    padding=20, expand=True
-                )
-            ]
-        )
+        return ft.View(controls=[ft.AppBar(title=ft.Text("Подписка"), bgcolor=ft.Colors.TRANSPARENT, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))), ft.Container(content=ft.Column([make_card_safe("Бесплатный", "free", 0, ["30 слов в день", "Базовый раздел"]), make_card_safe("Плюс", "plus", 199, ["500 слов в день", "Все разделы", "Тесты"]), make_card_safe("Премиум", "premium", 499, ["Безлимит", "Экспорт прогресса", "Поддержка"])], scroll=ft.ScrollMode.AUTO), padding=20, expand=True)])
 
     navigate("/")
 
