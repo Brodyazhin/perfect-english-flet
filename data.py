@@ -19,7 +19,7 @@ DATA = {
                 {"en": "W w", "ipa": "ˈdʌb.əl.juː", "ru": "дабл-ю", "say": "W"}, {"en": "X x", "ipa": "eks", "ru": "экс", "say": "X"},
                 {"en": "Y y", "ipa": "waɪ", "ru": "уай", "say": "Y"}, {"en": "Z z", "ipa": "zed / ziː", "ru": "зэд / зи", "say": "Z"},
             ]},
-            "Числа 1-10": {"words": [
+            "Числа": {"words": [
                 {"en": "zero", "ipa": "ˈzɪə.rəʊ", "ru": "ноль"}, {"en": "one", "ipa": "wʌn", "ru": "один"},
                 {"en": "two", "ipa": "tuː", "ru": "два"}, {"en": "three", "ipa": "θriː", "ru": "три"},
                 {"en": "four", "ipa": "fɔːr", "ru": "четыре"}, {"en": "five", "ipa": "faɪv", "ru": "пять"},
@@ -28,17 +28,21 @@ DATA = {
                 {"en": "ten", "ipa": "ten", "ru": "десять"},
             ]},
             "Цвета": {"words": [
-                {"en": "color", "ipa": "ˈkʌl.ər", "ru": "цвет"}, {"en": "red", "ipa": "red", "ru": "красный"},
-                {"en": "orange", "ipa": "ˈɒr.ɪndʒ", "ru": "оранжевый"}, {"en": "yellow", "ipa": "ˈjel.əʊ", "ru": "жёлтый"},
-                {"en": "green", "ipa": "ɡriːn", "ru": "зелёный"}, {"en": "blue", "ipa": "bluː", "ru": "синий"},
-                {"en": "purple", "ipa": "ˈpɜː.pl̩", "ru": "фиолетовый"}, {"en": "pink", "ipa": "pɪŋk", "ru": "розовый"},
-                {"en": "brown", "ipa": "braʊn", "ru": "коричневый"}, {"en": "black", "ipa": "blæk", "ru": "чёрный"},
+                {"en": "red", "ipa": "red", "ru": "красный"}, {"en": "orange", "ipa": "ˈɒr.ɪndʒ", "ru": "оранжевый"},
+                {"en": "yellow", "ipa": "ˈjel.əʊ", "ru": "жёлтый"}, {"en": "green", "ipa": "ɡriːn", "ru": "зелёный"},
+                {"en": "blue", "ipa": "bluː", "ru": "синий"}, {"en": "purple", "ipa": "ˈpɜː.pl̩", "ru": "фиолетовый"},
+                {"en": "pink", "ipa": "pɪŋk", "ru": "розовый"}, {"en": "black", "ipa": "blæk", "ru": "чёрный"},
                 {"en": "white", "ipa": "waɪt", "ru": "белый"},
+            ]},
+            "Местоимения": {"words": [
+                {"en": "I", "ipa": "aɪ", "ru": "я"}, {"en": "you", "ipa": "juː", "ru": "ты / вы"},
+                {"en": "he", "ipa": "hiː", "ru": "он"}, {"en": "she", "ipa": "ʃiː", "ru": "она"},
+                {"en": "it", "ipa": "ɪt", "ru": "оно"}, {"en": "we", "ipa": "wiː", "ru": "мы"}, {"en": "they", "ipa": "ðeɪ", "ru": "они"},
             ]},
         },
     },
     "2. Словарный запас": {
-        "color": "#e88fa8", "icon": "📚", "desc": "Повседневные слова: семья, дом, еда",
+        "color": "#e88fa8", "icon": "📚", "desc": "Повседневные слова: семья, еда, дом, тело",
         "subsections": {
             "Семья": {"words": [
                 {"en": "mother", "ipa": "ˈmʌð.ər", "ru": "мама"}, {"en": "father", "ipa": "ˈfɑː.ðər", "ru": "папа"},
@@ -57,34 +61,91 @@ DATA = {
                 {"en": "bread", "ipa": "bred", "ru": "хлеб"}, {"en": "milk", "ipa": "mɪlk", "ru": "молоко"},
                 {"en": "cheese", "ipa": "tʃiːz", "ru": "сыр"}, {"en": "meat", "ipa": "miːt", "ru": "мясо"},
                 {"en": "water", "ipa": "ˈwɔː.tər", "ru": "вода"}, {"en": "tea", "ipa": "tiː", "ru": "чай"},
-                {"en": "coffee", "ipa": "ˈkɒf.i", "ru": "кофе"}, {"en": "juice", "ipa": "dʒuːs", "ru": "сок"},
+            ]},
+            "Дом": {"words": [
+                {"en": "house", "ipa": "haʊs", "ru": "дом"}, {"en": "room", "ipa": "ruːm", "ru": "комната"},
+                {"en": "kitchen", "ipa": "ˈkɪtʃ.ɪn", "ru": "кухня"}, {"en": "bedroom", "ipa": "ˈbed.ruːm", "ru": "спальня"},
+                {"en": "bathroom", "ipa": "ˈbɑːθ.ruːm", "ru": "ванная"}, {"en": "table", "ipa": "ˈteɪ.bl̩", "ru": "стол"},
+                {"en": "chair", "ipa": "tʃeər", "ru": "стул"}, {"en": "bed", "ipa": "bed", "ru": "кровать"},
+            ]},
+            "Одежда": {"words": [
+                {"en": "clothes", "ipa": "kləʊðz", "ru": "одежда"}, {"en": "shirt", "ipa": "ʃɜːt", "ru": "рубашка"},
+                {"en": "T-shirt", "ipa": "ˈtiː.ʃɜːt", "ru": "футболка"}, {"en": "dress", "ipa": "dres", "ru": "платье"},
+                {"en": "jeans", "ipa": "dʒiːnz", "ru": "джинсы"}, {"en": "jacket", "ipa": "ˈdʒæk.ɪt", "ru": "куртка"},
+                {"en": "shoes", "ipa": "ʃuːz", "ru": "обувь"}, {"en": "hat", "ipa": "hæt", "ru": "шляпа"},
+            ]},
+            "Части тела": {"words": [
+                {"en": "head", "ipa": "hed", "ru": "голова"}, {"en": "eye", "ipa": "aɪ", "ru": "глаз"},
+                {"en": "ear", "ipa": "ɪər", "ru": "ухо"}, {"en": "nose", "ipa": "nəʊz", "ru": "нос"},
+                {"en": "mouth", "ipa": "maʊθ", "ru": "рот"}, {"en": "hand", "ipa": "hænd", "ru": "рука"},
+                {"en": "leg", "ipa": "leɡ", "ru": "нога"}, {"en": "heart", "ipa": "hɑːt", "ru": "сердце"},
+            ]},
+            "Профессии": {"words": [
+                {"en": "doctor", "ipa": "ˈdɒk.tər", "ru": "врач"}, {"en": "teacher", "ipa": "ˈtiː.tʃər", "ru": "учитель"},
+                {"en": "engineer", "ipa": "ˌen.dʒɪˈnɪər", "ru": "инженер"}, {"en": "programmer", "ipa": "ˈprəʊ.ɡræm.ər", "ru": "программист"},
+                {"en": "driver", "ipa": "ˈdraɪ.vər", "ru": "водитель"}, {"en": "cook", "ipa": "kʊk", "ru": "повар"},
             ]},
         },
     },
-    "3. Фразы": {
-        "color": "#7bc9b8", "icon": "💬", "desc": "Учимся говорить: приветствия, вежливость",
+    "3. Время и природа": {
+        "color": "#f9e2af", "icon": "🌍", "desc": "Дни недели, погода, природа и космос",
+        "subsections": {
+            "Дни недели": {"words": [
+                {"en": "Monday", "ipa": "ˈmʌn.deɪ", "ru": "понедельник"}, {"en": "Tuesday", "ipa": "ˈtjuːz.deɪ", "ru": "вторник"},
+                {"en": "Wednesday", "ipa": "ˈwenz.deɪ", "ru": "среда"}, {"en": "Thursday", "ipa": "ˈθɜːz.deɪ", "ru": "четверг"},
+                {"en": "Friday", "ipa": "ˈfraɪ.deɪ", "ru": "пятница"}, {"en": "Saturday", "ipa": "ˈsæt.ə.deɪ", "ru": "суббота"},
+                {"en": "Sunday", "ipa": "ˈsʌn.deɪ", "ru": "воскресенье"},
+            ]},
+            "Месяцы": {"words": [
+                {"en": "January", "ipa": "ˈdʒæn.ju.ər.i", "ru": "январь"}, {"en": "February", "ipa": "ˈfeb.ru.ər.i", "ru": "февраль"},
+                {"en": "March", "ipa": "mɑːtʃ", "ru": "март"}, {"en": "April", "ipa": "ˈeɪ.prəl", "ru": "апрель"},
+                {"en": "May", "ipa": "meɪ", "ru": "май"}, {"en": "June", "ipa": "dʒuːn", "ru": "июнь"},
+                {"en": "July", "ipa": "dʒuˈlaɪ", "ru": "июль"}, {"en": "August", "ipa": "ɔːˈɡʌst", "ru": "август"},
+                {"en": "September", "ipa": "sepˈtem.bər", "ru": "сентябрь"}, {"en": "October", "ipa": "ɒkˈtəʊ.bər", "ru": "октябрь"},
+                {"en": "November", "ipa": "nəʊˈvem.bər", "ru": "ноябрь"}, {"en": "December", "ipa": "dɪˈsem.bər", "ru": "декабрь"},
+            ]},
+            "Погода": {"words": [
+                {"en": "weather", "ipa": "ˈweð.ər", "ru": "погода"}, {"en": "sun", "ipa": "sʌn", "ru": "солнце"},
+                {"en": "rain", "ipa": "reɪn", "ru": "дождь"}, {"en": "snow", "ipa": "snəʊ", "ru": "снег"},
+                {"en": "wind", "ipa": "wɪnd", "ru": "ветер"}, {"en": "cloud", "ipa": "klaʊd", "ru": "облако"},
+                {"en": "hot", "ipa": "hɒt", "ru": "жарко"}, {"en": "cold", "ipa": "kəʊld", "ru": "холодно"},
+            ]},
+            "Космос": {"words": [
+                {"en": "space", "ipa": "speɪs", "ru": "космос"}, {"en": "star", "ipa": "stɑːr", "ru": "звезда"},
+                {"en": "moon", "ipa": "muːn", "ru": "луна"}, {"en": "planet", "ipa": "ˈplæn.ɪt", "ru": "планета"},
+                {"en": "Earth", "ipa": "ɜːθ", "ru": "Земля"}, {"en": "Mars", "ipa": "mɑːz", "ru": "Марс"},
+            ]},
+        },
+    },
+    "4. Фразы и общение": {
+        "color": "#7bc9b8", "icon": "💬", "desc": "Приветствия, вежливость, путешествия",
         "subsections": {
             "Приветствие": {"words": [
                 {"en": "Hello!", "ipa": "həˈloʊ", "ru": "Привет!"}, {"en": "Good morning!", "ipa": "ɡʊd ˈmɔːr.nɪŋ", "ru": "Доброе утро!"},
-                {"en": "Good afternoon!", "ipa": "ɡʊd ˌɑːf.təˈnuːn", "ru": "Добрый день!"}, {"en": "Good evening!", "ipa": "ɡʊd ˈiːv.nɪŋ", "ru": "Добрый вечер!"},
-                {"en": "How are you?", "ipa": "haʊ ɑːr juː", "ru": "Как дела?"}, {"en": "Goodbye!", "ipa": "ɡʊdˈbaɪ", "ru": "До свидания!"},
+                {"en": "Good evening!", "ipa": "ɡʊd ˈiːv.nɪŋ", "ru": "Добрый вечер!"}, {"en": "How are you?", "ipa": "haʊ ɑːr juː", "ru": "Как дела?"},
+                {"en": "Goodbye!", "ipa": "ɡʊdˈbaɪ", "ru": "До свидания!"},
             ]},
             "Вежливость": {"words": [
                 {"en": "Thank you", "ipa": "θæŋk juː", "ru": "Спасибо"}, {"en": "Please", "ipa": "pliːz", "ru": "Пожалуйста"},
                 {"en": "Sorry", "ipa": "ˈsɒr. i", "ru": "Извините"}, {"en": "Excuse me", "ipa": "ɪkˈskjuːz miː", "ru": "Простите"},
                 {"en": "No problem", "ipa": "noʊ ˈprɒb.ləm", "ru": "Без проблем"},
             ]},
+            "В аэропорту": {"words": [
+                {"en": "Where is the gate?", "ipa": "weər ɪz ðə ɡeɪt", "ru": "Где выход на посадку?"},
+                {"en": "I have a connecting flight.", "ipa": "aɪ hæv ə kəˈnek.tɪŋ flaɪt", "ru": "У меня стыковочный рейс."},
+                {"en": "Is it a direct flight?", "ipa": "ɪz ɪt ə dəˈrekt flaɪt", "ru": "Это прямой рейс?"},
+                {"en": "My luggage is lost.", "ipa": "maɪ ˈlʌɡ.ɪdʒ ɪz lɒst", "ru": "Мой багаж потерялся."},
+            ]},
         },
     },
-    "4. Продвинутый уровень": {
-        "color": "#cba6f7", "icon": "🚀", "desc": "Идиомы, сленг, фразовые глаголы и бизнес",
+    "5. Продвинутый уровень": {
+        "color": "#cba6f7", "icon": "🚀", "desc": "Идиомы, сленг и деловой английский (Платно)",
         "subsections": {
             "Идиомы": {"words": [
                 {"en": "Hit the sack", "ipa": "hɪt ðə sæk", "ru": "Отправиться спать"},
                 {"en": "Twist someone's arm", "ipa": "twɪst ˈsʌm.wʌnz ɑːrm", "ru": "Уговорить"},
                 {"en": "Hit the books", "ipa": "hɪt ðə bʊks", "ru": "Усердно учиться"},
                 {"en": "Spill the beans", "ipa": "spɪl ðə biːnz", "ru": "Выдать секрет"},
-                {"en": "Cool as a cucumber", "ipa": "kuːl æz ə ˈkjuː.kʌm.bər", "ru": "Спокойный"},
             ]},
             "Фразовые глаголы": {"words": [
                 {"en": "Give up", "ipa": "ɡɪv ʌp", "ru": "Сдаваться"},
@@ -92,7 +153,6 @@ DATA = {
                 {"en": "Find out", "ipa": "faɪnd aʊt", "ru": "Выяснить"},
                 {"en": "Turn on / off", "ipa": "tɜːn ɒn / ɒf", "ru": "Включить / выключить"},
                 {"en": "Put off", "ipa": "pʊt ɒf", "ru": "Откладывать"},
-                {"en": "Get along", "ipa": "ɡet əˈlɒŋ", "ru": "Ладить (с кем-то)"},
             ]},
             "Полезные прилагательные": {"words": [
                 {"en": "Amazing", "ipa": "əˈmeɪ.zɪŋ", "ru": "Изумительный"},
@@ -100,22 +160,18 @@ DATA = {
                 {"en": "Huge", "ipa": "hjuːdʒ", "ru": "Огромный"},
                 {"en": "Tiny", "ipa": "ˈtaɪ.ni", "ru": "Крошечный"},
                 {"en": "Exhausted", "ipa": "ɪɡˈzɔː.stɪd", "ru": "Измученный"},
-                {"en": "Confident", "ipa": "ˈkɒn.fɪ.dənt", "ru": "Уверенный"},
             ]},
             "Деловой английский": {"words": [
                 {"en": "Deadline", "ipa": "ˈded.laɪn", "ru": "Крайний срок"},
                 {"en": "Meeting", "ipa": "ˈmiː.tɪŋ", "ru": "Встреча"},
                 {"en": "Report", "ipa": "rɪˈpɔːt", "ru": "Отчёт"},
                 {"en": "Client", "ipa": "ˈklaɪ.ənt", "ru": "Клиент"},
-                {"en": "Budget", "ipa": "ˈbʌdʒ.ɪt", "ru": "Бюджет"},
-                {"en": "Negotiation", "ipa": "nɪˌɡəʊ.ʃiˈeɪ.ʃn̩", "ru": "Переговоры"},
             ]},
-            "Сленг и неформальное общение": {"words": [
+            "Сленг": {"words": [
                 {"en": "Chill", "ipa": "tʃɪl", "ru": "Расслабляться"},
-                {"en": "Awesome", "ipa": "ˈɔː.səm", "ru": "Круто / классно"},
+                {"en": "Awesome", "ipa": "ˈɔː.səm", "ru": "Круто"},
                 {"en": "Broke", "ipa": "brəʊk", "ru": "Без денег"},
                 {"en": "Hang out", "ipa": "hæŋ aʊt", "ru": "Тусоваться"},
-                {"en": "Piece of cake", "ipa": "piːs əv keɪk", "ru": "Проще простого"},
             ]},
         },
     },
