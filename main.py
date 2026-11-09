@@ -1,5 +1,4 @@
 import flet as ft
-import time
 import threading
 from data import DATA, count_words, all_words_flat
 from subscription import state, TIERS
@@ -10,6 +9,11 @@ def main(page: ft.Page):
     page.padding = 0
     page.theme = ft.Theme(color_scheme_seed=ft.Colors.BLUE)
     
+    # --- Состояние чата ---
+    chat_messages = [
+        {"text": "👋 Привет! Я техподдержка Perfect English. Чем могу помочь?", "is_user": False}
+    ]
+
     def toggle_theme(e):
         page.theme_mode = ft.ThemeMode.DARK if page.theme_mode == ft.ThemeMode.LIGHT else ft.ThemeMode.LIGHT
         page.update()
@@ -30,6 +34,8 @@ def main(page: ft.Page):
             page.views.append(stats_view())
         elif route == "/subscription":
             page.views.append(subscription_view())
+        elif route == "/support":
+            page.views.append(support_view())
         page.update()
 
     # --- ГЛАВНОЕ МЕНЮ ---
@@ -38,9 +44,8 @@ def main(page: ft.Page):
         
         section_cards = []
         for name, item in DATA.items():
-            # Проверяем, заблокирован ли раздел (Продвинутый уровень = 4)
-            is_locked = (name.startswith("4.") and state.license["tier"] == "free")
-            
+            # Блокируем 5-й раздел для бесплатных пользователей
+            is_locked = (name.startswith("5.") and state.license["tier"] == "free")
             lock_icon = ft.Icon(ft.Icons.LOCK, color=ft.Colors.RED) if is_locked else ft.Icon(ft.Icons.CHEVRON_RIGHT, color=ft.Colors.GREY_400)
             
             section_cards.append(
@@ -101,9 +106,71 @@ def main(page: ft.Page):
                     ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"),
                     ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"),
                     ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"),
-                    ft.NavigationBarDestination(icon=ft.Icons.BAR_CHART, label="Статистика"),
+                    ft.NavigationBarDestination(icon=ft.Icons.SUPPORT_AGENT, label="Поддержка"), # <-- Новая кнопка
                 ],
-                on_change=lambda e: navigate(["/", "/search", "/favorites", "/stats"][e.control.selected_index])
+                on_change=lambda e: navigate(["/", "/search", "/favorites", "/support"][e.control.selected_index])
+            )
+        )
+
+    # --- ТЕХПОДДЕРЖКА ---
+    def support_view():
+        messages_list = ft.ListView(expand=True, spacing=10, padding=20)
+        
+        def render_messages():
+            messages_list.controls.clear()
+            for msg in chat_messages:
+                is_user = msg["is_user"]
+                messages_list.controls.append(
+                    ft.Row([
+                        ft.Container(
+                            content=ft.Text(msg["text"], color=ft.Colors.WHITE if is_user else ft.Colors.BLACK, size=14),
+                            bgcolor=ft.Colors.BLUE_400 if is_user else ft.Colors.GREY_200,
+                            padding=15,
+                            border_radius=ft.border_radius.only(top_left=15, top_right=15, bottom_left=15 if is_user else 0, bottom_right=0 if is_user else 15)
+                        )
+                    ], alignment=ft.MainAxisAlignment.END if is_user else ft.MainAxisAlignment.START)
+                )
+            page.update()
+
+        def send_message(e):
+            if not input_field.value: return
+            chat_messages.append({"text": input_field.value, "is_user": True})
+            input_field.value = ""
+            render_messages()
+            
+            # Имитация ответа бота
+            def bot_reply():
+                import time
+                time.sleep(1)
+                text = chat_messages[-1]["text"].lower()
+                response = "🤔 Я передал ваш вопрос оператору. Ответим в течение 24 часов."
+                if "оплат" in text or "купить" in text: response = "💳 Для оплаты перейдите в раздел «Подписка»."
+                elif "промокод" in text: response = "🎟 Промокоды доступны в разделе «Подписка»."
+                elif "баг" in text or "ошибк" in text: response = "⚠ Опишите проблему подробнее, и мы исправим!"
+                
+                chat_messages.append({"text": response, "is_user": False})
+                render_messages()
+            
+            threading.Thread(target=bot_reply).start()
+
+        render_messages()
+        input_field = ft.TextField(hint_text="Введите сообщение...", expand=True, border_radius=20, on_submit=send_message)
+        
+        return ft.View(
+            controls=[
+                ft.AppBar(title=ft.Text("Техподдержка"), bgcolor=ft.Colors.TRANSPARENT, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
+                messages_list,
+                ft.Container(
+                    content=ft.Row([
+                        input_field,
+                        ft.IconButton(ft.Icons.SEND, icon_color=ft.Colors.BLUE, on_click=send_message)
+                    ]),
+                    padding=10, bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST
+                )
+            ],
+            navigation_bar=ft.NavigationBar(
+                destinations=[ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationBarDestination(icon=ft.Icons.SUPPORT_AGENT, label="Поддержка")],
+                selected_index=3, on_change=lambda e: navigate(["/", "/search", "/favorites", "/support"][e.control.selected_index])
             )
         )
 
@@ -114,14 +181,13 @@ def main(page: ft.Page):
         if is_locked:
             page.show_dialog(ft.AlertDialog(
                 title=ft.Text("Раздел заблокирован"),
-                content=ft.Text("Для доступа к «Продвинутому уровню» необходимо оформить подписку Плюс или Премиум."),
+                content=ft.Text("Для доступа к «Продвинутому уровню» необходимо оформить подписку."),
                 actions=[
                     ft.TextButton("Отмена", on_click=lambda e: page.pop_dialog()),
                     ft.TextButton("Оформить", on_click=lambda e: (page.pop_dialog(), navigate("/subscription")))
                 ]
             ))
             return
-
         current_section_data.clear()
         current_section_data.update({"name": section_name, "item": DATA[section_name]})
         navigate("/section")
@@ -135,8 +201,7 @@ def main(page: ft.Page):
         def render_subs(query=""):
             subs_list.controls.clear()
             for sub_name, sub_item in item["subsections"].items():
-                if query and query.lower() not in sub_name.lower():
-                    continue
+                if query and query.lower() not in sub_name.lower(): continue
                 subs_list.controls.append(
                     ft.Container(
                         content=ft.ListTile(
@@ -144,8 +209,7 @@ def main(page: ft.Page):
                             trailing=ft.Icon(ft.Icons.PLAY_CIRCLE_FILL, color=ft.Colors.BLUE_400, size=30),
                         ),
                         bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
-                        border_radius=15,
-                        padding=5,
+                        border_radius=15, padding=5,
                         on_click=lambda e, n=sub_name, i=sub_item: open_flashcards(n, i)
                     )
                 )
@@ -153,32 +217,18 @@ def main(page: ft.Page):
 
         render_subs()
 
-        def on_search(e):
-            render_subs(e.control.value)
+        def on_search(e): render_subs(e.control.value)
 
         return ft.View(
             controls=[
-                ft.AppBar(
-                    title=ft.Text(name, weight=ft.FontWeight.BOLD), 
-                    bgcolor=ft.Colors.TRANSPARENT,
-                    leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))
-                ),
+                ft.AppBar(title=ft.Text(name, weight=ft.FontWeight.BOLD), bgcolor=ft.Colors.TRANSPARENT, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
                 ft.Container(
                     content=ft.Column([
-                        ft.TextField(
-                            hint_text="Поиск по темам...", 
-                            prefix_icon=ft.Icons.SEARCH,
-                            on_change=on_search,
-                            border_radius=15,
-                            filled=True,
-                            bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
-                            border_color=ft.Colors.TRANSPARENT,
-                        ),
+                        ft.TextField(hint_text="Поиск по темам...", prefix_icon=ft.Icons.SEARCH, on_change=on_search, border_radius=15, filled=True, bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_color=ft.Colors.TRANSPARENT),
                         ft.Container(height=10),
                         ft.Column([subs_list], scroll=ft.ScrollMode.AUTO, expand=True)
                     ]),
-                    padding=20,
-                    expand=True
+                    padding=20, expand=True
                 )
             ]
         )
@@ -190,9 +240,7 @@ def main(page: ft.Page):
         words = sub_item.get("words", [])
         if "subsections" in sub_item:
             words = []
-            for s in sub_item["subsections"].values():
-                words.extend(s.get("words", []))
-                
+            for s in sub_item["subsections"].values(): words.extend(s.get("words", []))
         if not words: return
         current_cards_data["words"] = words
         current_cards_data["index"] = 0
@@ -200,9 +248,7 @@ def main(page: ft.Page):
         navigate("/flashcards")
 
     def flashcards_view():
-        if not current_cards_data["words"]:
-            return ft.View(controls=[ft.Text("Нет слов")])
-
+        if not current_cards_data["words"]: return ft.View(controls=[ft.Text("Нет слов")])
         word = current_cards_data["words"][current_cards_data["index"]]
         is_known = word["en"] in state.progress["known"]
         is_fav = word["en"] in state.progress["favorites"]
@@ -224,10 +270,8 @@ def main(page: ft.Page):
             next_word(e)
 
         def toggle_fav(e):
-            if is_fav:
-                state.progress["favorites"].remove(word["en"])
-            else:
-                state.progress["favorites"].append(word["en"])
+            if is_fav: state.progress["favorites"].remove(word["en"])
+            else: state.progress["favorites"].append(word["en"])
             state.save_progress()
             page.views[-1] = flashcards_view()
             page.update()
@@ -235,16 +279,9 @@ def main(page: ft.Page):
         return ft.View(
             controls=[
                 ft.AppBar(
-                    title=ft.Text(current_cards_data["title"]),
-                    bgcolor=ft.Colors.TRANSPARENT,
+                    title=ft.Text(current_cards_data["title"]), bgcolor=ft.Colors.TRANSPARENT,
                     leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/section")),
-                    actions=[
-                        ft.IconButton(
-                            ft.Icons.FAVORITE if is_fav else ft.Icons.FAVORITE_BORDER, 
-                            icon_color=ft.Colors.RED if is_fav else ft.Colors.GREY, 
-                            on_click=toggle_fav
-                        )
-                    ]
+                    actions=[ft.IconButton(ft.Icons.FAVORITE if is_fav else ft.Icons.FAVORITE_BORDER, icon_color=ft.Colors.RED if is_fav else ft.Colors.GREY, on_click=toggle_fav)]
                 ),
                 ft.Container(
                     content=ft.Column([
@@ -257,81 +294,48 @@ def main(page: ft.Page):
                                 ft.Container(height=40),
                                 ft.Button(
                                     content=ft.Row([ft.Icon(ft.Icons.VISIBILITY), ft.Text("Показать перевод")], alignment=ft.MainAxisAlignment.CENTER),
-                                    on_click=lambda e: page.show_dialog(
-                                        ft.AlertDialog(
-                                            title=ft.Text("Перевод", text_align=ft.TextAlign.CENTER),
-                                            content=ft.Text(word["ru"], size=24, text_align=ft.TextAlign.CENTER),
-                                            alignment=ft.Alignment.CENTER
-                                        )
-                                    ),
+                                    on_click=lambda e: page.show_dialog(ft.AlertDialog(title=ft.Text("Перевод", text_align=ft.TextAlign.CENTER), content=ft.Text(word["ru"], size=24, text_align=ft.TextAlign.CENTER), alignment=ft.Alignment.CENTER)),
                                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), padding=20)
                                 )
                             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                            bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
-                            border_radius=30,
-                            padding=40,
-                            shadow=ft.BoxShadow(blur_radius=30, color=ft.Colors.with_opacity(0.1, ft.Colors.BLACK), offset=ft.Offset(0, 10)),
-                            expand=True
+                            bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=30, padding=40,
+                            shadow=ft.BoxShadow(blur_radius=30, color=ft.Colors.with_opacity(0.1, ft.Colors.BLACK), offset=ft.Offset(0, 10)), expand=True
                         ),
                         ft.Container(height=20),
                         ft.Row([
                             ft.IconButton(ft.Icons.ARROW_BACK_IOS, icon_size=30, on_click=prev_word),
                             ft.Row([
-                                ft.Button(
-                                    content=ft.Icon(ft.Icons.CLOSE, color=ft.Colors.WHITE),
-                                    bgcolor=ft.Colors.RED_400, on_click=next_word,
-                                    width=60, height=60,
-                                    style=ft.ButtonStyle(shape=ft.CircleBorder())
-                                ),
-                                ft.Button(
-                                    content=ft.Icon(ft.Icons.CHECK, color=ft.Colors.WHITE),
-                                    bgcolor=ft.Colors.GREEN_400, on_click=mark_known,
-                                    width=60, height=60,
-                                    style=ft.ButtonStyle(shape=ft.CircleBorder())
-                                ),
+                                ft.Button(content=ft.Icon(ft.Icons.CLOSE, color=ft.Colors.WHITE), bgcolor=ft.Colors.RED_400, on_click=next_word, width=60, height=60, style=ft.ButtonStyle(shape=ft.CircleBorder())),
+                                ft.Button(content=ft.Icon(ft.Icons.CHECK, color=ft.Colors.WHITE), bgcolor=ft.Colors.GREEN_400, on_click=mark_known, width=60, height=60, style=ft.ButtonStyle(shape=ft.CircleBorder())),
                             ], spacing=40),
                             ft.IconButton(ft.Icons.ARROW_FORWARD_IOS, icon_size=30, on_click=next_word),
                         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, width=300)
                     ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                    padding=20,
-                    expand=True
+                    padding=20, expand=True
                 )
             ]
         )
 
-    # --- ПОДПИСКА (С ИМИТАЦИЕЙ ОПЛАТЫ) ---
+    # --- ПОДПИСКА ---
     def subscription_view():
         current_tier = state.license["tier"]
-        
         def make_card(name, tier_id, price, features):
             is_current = (tier_id == current_tier)
             card_bg = ft.Colors.BLUE_50 if is_current else ft.Colors.SURFACE_CONTAINER_HIGHEST
             
             def process_payment(e):
-                # Имитация оплаты
                 dlg = ft.AlertDialog(title=ft.Text("Оплата"), content=ft.Text("Соединение с банком..."))
                 page.show_dialog(dlg)
-                
                 def finish():
                     page.pop_dialog()
                     state.license["tier"] = tier_id
                     state.save_license()
-                    page.show_dialog(ft.AlertDialog(title=ft.Text("Успешно"), content=ft.Text(f"Тариф «{name}» успешно активирован!")))
-                    page.views[-1] = subscription_view() # Обновляем экран
+                    page.show_dialog(ft.AlertDialog(title=ft.Text("Успешно"), content=ft.Text(f"Тариф «{name}» активирован!")))
+                    page.views[-1] = subscription_view()
                     page.update()
-                
-                # Запускаем в отдельном потоке, чтобы не вешать UI
                 threading.Timer(2.0, finish).start()
 
-            btn = ft.Button(
-                content="Текущий план" if is_current else "Оформить",
-                disabled=is_current,
-                bgcolor=ft.Colors.BLUE if not is_current else ft.Colors.GREY_300,
-                color=ft.Colors.WHITE,
-                height=50,
-                on_click=process_payment
-            )
-            
+            btn = ft.Button(content="Текущий план" if is_current else "Оформить", disabled=is_current, bgcolor=ft.Colors.BLUE if not is_current else ft.Colors.GREY_300, color=ft.Colors.WHITE, height=50, on_click=process_payment)
             return ft.Container(
                 content=ft.Column([
                     ft.Text(f"{TIERS[tier_id]['icon']} {name}", size=22, weight=ft.FontWeight.BOLD),
@@ -369,12 +373,12 @@ def main(page: ft.Page):
             for w in found:
                 results_list.controls.append(ft.Container(content=ft.ListTile(title=ft.Text(w["en"], weight=ft.FontWeight.BOLD), subtitle=ft.Text(w["ru"])), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, padding=5))
             page.update()
-
         return ft.View(
             controls=[
                 ft.AppBar(title=ft.Text("Поиск"), bgcolor=ft.Colors.TRANSPARENT, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
                 ft.Container(content=ft.Column([ft.TextField(hint_text="Введите слово...", on_change=on_search, prefix_icon=ft.Icons.SEARCH, border_radius=15, filled=True), ft.Container(height=10), ft.Column([results_list], scroll=ft.ScrollMode.AUTO, expand=True)]), padding=20, expand=True)
-            ]
+            ],
+            navigation_bar=ft.NavigationBar(destinations=[ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationBarDestination(icon=ft.Icons.SUPPORT_AGENT, label="Поддержка")], selected_index=1, on_change=lambda e: navigate(["/", "/search", "/favorites", "/support"][e.control.selected_index]))
         )
 
     def favorites_view():
@@ -382,14 +386,14 @@ def main(page: ft.Page):
         items = [ft.Container(content=ft.ListTile(title=ft.Text(w["en"], weight=ft.FontWeight.BOLD), subtitle=ft.Text(w["ru"])), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, padding=5, margin=ft.Margin(bottom=5)) for w in fav_words] if fav_words else [ft.Text("Вы пока не добавили слова в избранное", color=ft.Colors.GREY_600)]
         return ft.View(
             controls=[ft.AppBar(title=ft.Text("Избранное"), bgcolor=ft.Colors.TRANSPARENT, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))), ft.Container(content=ft.Column(items, scroll=ft.ScrollMode.AUTO, expand=True), padding=20, expand=True)],
-            navigation_bar=ft.NavigationBar(destinations=[ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationBarDestination(icon=ft.Icons.BAR_CHART, label="Статистика")], selected_index=2, on_change=lambda e: navigate(["/", "/search", "/favorites", "/stats"][e.control.selected_index]))
+            navigation_bar=ft.NavigationBar(destinations=[ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationBarDestination(icon=ft.Icons.SUPPORT_AGENT, label="Поддержка")], selected_index=2, on_change=lambda e: navigate(["/", "/search", "/favorites", "/support"][e.control.selected_index]))
         )
 
     def stats_view():
         known_count = len(state.progress["known"]); total_count = len(all_words_flat()); streak = state.progress.get("streak", 0)
         return ft.View(
             controls=[ft.AppBar(title=ft.Text("Статистика"), bgcolor=ft.Colors.TRANSPARENT, leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))), ft.Container(content=ft.Column([ft.Container(content=ft.ListTile(leading=ft.Text("🔥", size=30), title=ft.Text("Серия дней", weight=ft.FontWeight.BOLD), subtitle=ft.Text(f"{streak} дн.")), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, margin=5), ft.Container(content=ft.ListTile(leading=ft.Text("📖", size=30), title=ft.Text("Изучено", weight=ft.FontWeight.BOLD), subtitle=ft.Text(f"{known_count} из {total_count}")), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, margin=5), ft.Container(content=ft.ListTile(leading=ft.Text("⭐", size=30), title=ft.Text("Избранное", weight=ft.FontWeight.BOLD), subtitle=ft.Text(str(len(state.progress["favorites"])))), bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=15, margin=5)], scroll=ft.ScrollMode.AUTO), padding=20, expand=True)],
-            navigation_bar=ft.NavigationBar(destinations=[ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationBarDestination(icon=ft.Icons.BAR_CHART, label="Статистика")], selected_index=3, on_change=lambda e: navigate(["/", "/search", "/favorites", "/stats"][e.control.selected_index]))
+            navigation_bar=ft.NavigationBar(destinations=[ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"), ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"), ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"), ft.NavigationBarDestination(icon=ft.Icons.SUPPORT_AGENT, label="Поддержка")], selected_index=3, on_change=lambda e: navigate(["/", "/search", "/favorites", "/support"][e.control.selected_index]))
         )
 
     navigate("/")
