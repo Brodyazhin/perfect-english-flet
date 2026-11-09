@@ -106,7 +106,7 @@ def main(page: ft.Page):
                     ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"),
                     ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"),
                     ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"),
-                    ft.NavigationBarDestination(icon=ft.Icons.SUPPORT_AGENT, label="Поддержка"), # <-- Новая кнопка
+                    ft.NavigationBarDestination(icon=ft.Icons.SUPPORT_AGENT, label="Поддержка"),
                 ],
                 on_change=lambda e: navigate(["/", "/search", "/favorites", "/support"][e.control.selected_index])
             )
@@ -126,7 +126,12 @@ def main(page: ft.Page):
                             content=ft.Text(msg["text"], color=ft.Colors.WHITE if is_user else ft.Colors.BLACK, size=14),
                             bgcolor=ft.Colors.BLUE_400 if is_user else ft.Colors.GREY_200,
                             padding=15,
-                            border_radius=ft.border_radius.only(top_left=15, top_right=15, bottom_left=15 if is_user else 0, bottom_right=0 if is_user else 15)
+                            # ИСПРАВЛЕНО: используем класс BorderRadius вместо .only()
+                            border_radius=ft.BorderRadius(
+                                top_left=15, top_right=15, 
+                                bottom_left=15 if is_user else 0, 
+                                bottom_right=0 if is_user else 15
+                            )
                         )
                     ], alignment=ft.MainAxisAlignment.END if is_user else ft.MainAxisAlignment.START)
                 )
