@@ -105,8 +105,8 @@ def main(page: ft.Page):
                             border_radius=10, width=50, height=50,
                             alignment=ft.Alignment.CENTER
                         ),
-                        title=ft.Text(name, weight=ft.FontWeight.BOLD, size=16, soft_wrap=True),
-                        subtitle=ft.Text(item["desc"], color=ft.Colors.GREY_600, size=12, soft_wrap=True, max_lines=2, overflow=ft.TextOverflow.ELLIPSIS),
+                        title=ft.Text(name, weight=ft.FontWeight.BOLD, size=16),
+                        subtitle=ft.Text(item["desc"], color=ft.Colors.GREY_600, size=12, max_lines=2, overflow=ft.TextOverflow.ELLIPSIS),
                         trailing=lock_icon,
                     ),
                     bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
@@ -132,9 +132,9 @@ def main(page: ft.Page):
                         ft.Container(
                             content=ft.Row([
                                 ft.Column([
-                                    ft.Text(f"{tier['icon']} {tier['name']} тариф", weight=ft.FontWeight.BOLD, size=18, soft_wrap=True),
-                                    ft.Text("Управление подпиской", size=12, color=ft.Colors.WHITE_70, soft_wrap=True),
-                                ], expand=True, spacing=4),  # <-- FIX: expand=True
+                                    ft.Text(f"{tier['icon']} {tier['name']} тариф", weight=ft.FontWeight.BOLD, size=18),
+                                    ft.Text("Управление подпиской", size=12, color=ft.Colors.WHITE_70),
+                                ], expand=True, spacing=4),
                                 ft.Icon(ft.Icons.DIAMOND, color=ft.Colors.ORANGE_400, size=30)
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, vertical_alignment=ft.CrossAxisAlignment.CENTER),
                             bgcolor=ft.Colors.BLUE_600, padding=20,
@@ -202,14 +202,12 @@ def main(page: ft.Page):
         messages_list = ft.ListView(expand=True, spacing=10, padding=20)
 
         def make_bubble_row(msg):
-            """Пузырь занимает максимум 75% ширины, прижат к нужному краю."""
             is_user = msg["is_user"]
             bubble = ft.Container(
                 content=ft.Text(
                     msg["text"],
                     color=ft.Colors.WHITE if is_user else ft.Colors.BLACK,
                     size=14,
-                    soft_wrap=True,
                 ),
                 bgcolor=ft.Colors.BLUE_400 if is_user else ft.Colors.GREY_200,
                 padding=15,
@@ -221,7 +219,7 @@ def main(page: ft.Page):
             )
             bubble_zone = ft.Container(
                 content=bubble,
-                expand=4,  # до 80% ширины
+                expand=4,
                 alignment=ft.Alignment.CENTER_RIGHT if is_user else ft.Alignment.CENTER_LEFT,
             )
             spacer = ft.Container(expand=1)
@@ -286,11 +284,10 @@ def main(page: ft.Page):
 
         def make_chip(label, text):
             return ft.Chip(
-                label=ft.Text(label, size=12, soft_wrap=True),
+                label=ft.Text(label, size=12),
                 on_click=lambda e: send_text(text),
             )
 
-        # <-- FIX: горизонтальный ListView вместо Row(scroll=...)
         quick_replies = ft.Container(
             content=ft.ListView(
                 controls=[
@@ -349,7 +346,7 @@ def main(page: ft.Page):
             spacing=6,
             scroll=ft.ScrollMode.AUTO,
             expand=True,
-            horizontal_alignment=ft.CrossAxisAlignment.STRETCH,  # <-- FIX: растягиваем по ширине
+            horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
         )
 
         def render_faq():
@@ -357,7 +354,7 @@ def main(page: ft.Page):
             for category, questions in FAQ_DATA.items():
                 faq_list.controls.append(
                     ft.Container(
-                        content=ft.Text(category, size=16, weight=ft.FontWeight.BOLD, soft_wrap=True),
+                        content=ft.Text(category, size=16, weight=ft.FontWeight.BOLD),
                         margin=ft.Margin(top=15, bottom=5, left=4)
                     )
                 )
@@ -369,8 +366,7 @@ def main(page: ft.Page):
                             content=ft.Column([
                                 ft.Container(
                                     content=ft.Row([
-                                        ft.Text(item["q"], weight=ft.FontWeight.W_600, size=14,
-                                                expand=True, soft_wrap=True),
+                                        ft.Text(item["q"], weight=ft.FontWeight.W_600, size=14, expand=True),
                                         ft.Icon(
                                             ft.Icons.EXPAND_LESS if is_open else ft.Icons.EXPAND_MORE,
                                             color=ft.Colors.BLUE, size=20
@@ -380,7 +376,7 @@ def main(page: ft.Page):
                                     on_click=lambda e, k=key: toggle_faq(k),
                                 ),
                                 ft.Container(
-                                    content=ft.Text(item["a"], size=13, color=ft.Colors.GREY_700, soft_wrap=True),
+                                    content=ft.Text(item["a"], size=13, color=ft.Colors.GREY_700),
                                     padding=ft.Padding(left=15, right=15, bottom=15, top=0),
                                     visible=is_open,
                                 ),
@@ -410,8 +406,8 @@ def main(page: ft.Page):
                             content=ft.Row([
                                 ft.Icon(ft.Icons.SUPPORT_AGENT, color=ft.Colors.BLUE, size=30),
                                 ft.Column([
-                                    ft.Text("Не нашли ответ?", weight=ft.FontWeight.BOLD, size=14, soft_wrap=True),
-                                    ft.Text("Задайте вопрос в поддержке", size=12, color=ft.Colors.GREY_600, soft_wrap=True),
+                                    ft.Text("Не нашли ответ?", weight=ft.FontWeight.BOLD, size=14),
+                                    ft.Text("Задайте вопрос в поддержке", size=12, color=ft.Colors.GREY_600),
                                 ], spacing=2, expand=True),
                                 ft.Icon(ft.Icons.CHEVRON_RIGHT, color=ft.Colors.GREY_400),
                             ]),
@@ -444,7 +440,7 @@ def main(page: ft.Page):
         if is_locked:
             page.show_dialog(ft.AlertDialog(
                 title=ft.Text("Раздел заблокирован"),
-                content=ft.Text("Для доступа к «Продвинутому уровню» необходимо оформить подписку.", soft_wrap=True),
+                content=ft.Text("Для доступа к «Продвинутому уровню» необходимо оформить подписку."),
                 actions=[
                     ft.TextButton("Отмена", on_click=lambda e: page.pop_dialog()),
                     ft.TextButton("Оформить", on_click=lambda e: (page.pop_dialog(), navigate("/subscription")))
@@ -469,7 +465,7 @@ def main(page: ft.Page):
                 subs_list.controls.append(
                     ft.Container(
                         content=ft.ListTile(
-                            title=ft.Text(sub_name, weight=ft.FontWeight.W_600, soft_wrap=True),
+                            title=ft.Text(sub_name, weight=ft.FontWeight.W_600),
                             trailing=ft.Icon(ft.Icons.PLAY_CIRCLE_FILL, color=ft.Colors.BLUE_400, size=30),
                         ),
                         bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
@@ -483,7 +479,7 @@ def main(page: ft.Page):
 
         return ft.View(
             controls=[
-                ft.AppBar(title=ft.Text(name, weight=ft.FontWeight.BOLD, soft_wrap=True), bgcolor=ft.Colors.TRANSPARENT,
+                ft.AppBar(title=ft.Text(name, weight=ft.FontWeight.BOLD), bgcolor=ft.Colors.TRANSPARENT,
                           leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
                 ft.Container(
                     content=ft.Column([
@@ -519,7 +515,6 @@ def main(page: ft.Page):
         is_known = word["en"] in state.progress["known"]
         is_fav = word["en"] in state.progress["favorites"]
 
-        # <-- FIX: динамический размер шрифта для длинных слов
         en_word = word["en"]
         if len(en_word) <= 12:
             font_size = 42
@@ -556,7 +551,7 @@ def main(page: ft.Page):
         return ft.View(
             controls=[
                 ft.AppBar(
-                    title=ft.Text(current_cards_data["title"], soft_wrap=True, max_lines=1, overflow=ft.TextOverflow.ELLIPSIS),
+                    title=ft.Text(current_cards_data["title"], max_lines=1, overflow=ft.TextOverflow.ELLIPSIS),
                     bgcolor=ft.Colors.TRANSPARENT,
                     leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/section")),
                     actions=[ft.IconButton(ft.Icons.FAVORITE if is_fav else ft.Icons.FAVORITE_BORDER,
@@ -571,16 +566,16 @@ def main(page: ft.Page):
                                         color=ft.Colors.GREEN_600 if is_known else ft.Colors.BLUE_400),
                                 ft.Container(height=20),
                                 ft.Text(en_word, size=font_size, weight=ft.FontWeight.BOLD,
-                                        text_align=ft.TextAlign.CENTER, soft_wrap=True),
+                                        text_align=ft.TextAlign.CENTER),
                                 ft.Text(f"[{word['ipa']}]", size=16, color=ft.Colors.GREY_600,
-                                        italic=True, text_align=ft.TextAlign.CENTER, soft_wrap=True),
+                                        italic=True, text_align=ft.TextAlign.CENTER),
                                 ft.Container(height=30),
                                 ft.Button(
                                     content=ft.Row([ft.Icon(ft.Icons.VISIBILITY), ft.Text("Показать перевод")],
                                                    alignment=ft.MainAxisAlignment.CENTER, tight=True),
                                     on_click=lambda e: page.show_dialog(ft.AlertDialog(
                                         title=ft.Text("Перевод", text_align=ft.TextAlign.CENTER),
-                                        content=ft.Text(word["ru"], size=24, text_align=ft.TextAlign.CENTER, soft_wrap=True),
+                                        content=ft.Text(word["ru"], size=24, text_align=ft.TextAlign.CENTER),
                                         alignment=ft.Alignment.CENTER)),
                                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), padding=20)
                                 )
@@ -592,7 +587,6 @@ def main(page: ft.Page):
                             expand=True
                         ),
                         ft.Container(height=20),
-                        # <-- FIX: убран width=300, добавлен padding для узких экранов
                         ft.Container(
                             content=ft.Row([
                                 ft.IconButton(ft.Icons.ARROW_BACK_IOS, icon_size=28, on_click=prev_word),
@@ -643,19 +637,19 @@ def main(page: ft.Page):
                 content="Текущий план" if is_current else "Оформить",
                 disabled=is_current,
                 bgcolor=ft.Colors.BLUE if not is_current else ft.Colors.GREY_300,
-                color=ft.Colors.WHITE, height=50, width=float("inf"),  # <-- FIX: на всю ширину
+                color=ft.Colors.WHITE, height=50, width=float("inf"),
                 on_click=process_payment
             )
             return ft.Container(
                 content=ft.Column([
-                    ft.Text(f"{TIERS[tier_id]['icon']} {name}", size=22, weight=ft.FontWeight.BOLD, soft_wrap=True),
+                    ft.Text(f"{TIERS[tier_id]['icon']} {name}", size=22, weight=ft.FontWeight.BOLD),
                     ft.Text(f"{price} ₽/мес" if price > 0 else "Бесплатно", size=28,
-                            color=ft.Colors.BLUE, weight=ft.FontWeight.BOLD, soft_wrap=True),
+                            color=ft.Colors.BLUE, weight=ft.FontWeight.BOLD),
                     ft.Divider(),
                     ft.Column([
                         ft.Row([
                             ft.Icon(ft.Icons.CHECK_CIRCLE, color=ft.Colors.GREEN, size=16),
-                            ft.Text(f, size=14, expand=True, soft_wrap=True),  # <-- FIX: expand=True
+                            ft.Text(f, size=14, expand=True),
                         ])
                         for f in features
                     ]),
@@ -674,7 +668,7 @@ def main(page: ft.Page):
                         make_card("Плюс", "plus", 199, ["500 слов в день", "Все разделы", "Продвинутый уровень"]),
                         make_card("Премиум", "premium", 499, ["Безлимит", "Экспорт прогресса", "Поддержка"]),
                     ], scroll=ft.ScrollMode.AUTO, expand=True,
-                       horizontal_alignment=ft.CrossAxisAlignment.STRETCH),  # <-- FIX: растягиваем карточки
+                       horizontal_alignment=ft.CrossAxisAlignment.STRETCH),
                     padding=20, expand=True
                 )
             ]
@@ -696,8 +690,8 @@ def main(page: ft.Page):
             for w in found:
                 results_list.controls.append(
                     ft.Container(content=ft.ListTile(
-                        title=ft.Text(w["en"], weight=ft.FontWeight.BOLD, soft_wrap=True),
-                        subtitle=ft.Text(w["ru"], soft_wrap=True)),
+                        title=ft.Text(w["en"], weight=ft.FontWeight.BOLD),
+                        subtitle=ft.Text(w["ru"])),
                         bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
                         border_radius=15, padding=5)
                 )
@@ -730,12 +724,12 @@ def main(page: ft.Page):
         fav_words = [w for w in all_words_flat() if w["en"] in state.progress["favorites"]]
         items = [
             ft.Container(content=ft.ListTile(
-                title=ft.Text(w["en"], weight=ft.FontWeight.BOLD, soft_wrap=True),
-                subtitle=ft.Text(w["ru"], soft_wrap=True)),
+                title=ft.Text(w["en"], weight=ft.FontWeight.BOLD),
+                subtitle=ft.Text(w["ru"])),
                 bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
                 border_radius=15, padding=5, margin=ft.Margin(bottom=5))
             for w in fav_words
-        ] if fav_words else [ft.Text("Вы пока не добавили слова в избранное", color=ft.Colors.GREY_600, soft_wrap=True)]
+        ] if fav_words else [ft.Text("Вы пока не добавили слова в избранное", color=ft.Colors.GREY_600)]
         return ft.View(
             controls=[
                 ft.AppBar(title=ft.Text("Избранное"), bgcolor=ft.Colors.TRANSPARENT,
@@ -766,8 +760,8 @@ def main(page: ft.Page):
             return ft.Container(
                 content=ft.ListTile(
                     leading=ft.Text(emoji, size=30),
-                    title=ft.Text(title, weight=ft.FontWeight.BOLD, soft_wrap=True),
-                    subtitle=ft.Text(value, soft_wrap=True)),
+                    title=ft.Text(title, weight=ft.FontWeight.BOLD),
+                    subtitle=ft.Text(value)),
                 bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
                 border_radius=15, margin=5
             )
