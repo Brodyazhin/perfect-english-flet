@@ -1,7 +1,9 @@
 import flet as ft
 import threading
 import time
-from data import DATA, count_words, all_words_flat
+import random
+from datetime import date
+from data import DATA, count_words, all_words_flat, collect_words
 from subscription import state, TIERS
 
 
@@ -26,7 +28,7 @@ FAQ_DATA = {
         {"q": "Что значит статус «Изучено»?",
          "a": "Слово помечается как «Изучено», когда вы нажимаете зелёную кнопку ✓ на карточке. Такие слова учитываются в общей статистике прогресса."},
         {"q": "Как работает статистика?",
-         "a": "Раздел «Статистика» показывает:\n🔥 серию дней обучения (streak)\n📖 количество изученных слов\n⭐ количество слов в избранном"},
+         "a": "Раздел «Статистика» показывает:\n🔥 серию дней обучения (streak)\n📖 количество изученных слов\n⭐ количество слов в избранном\n🧠 результаты квизов"},
         {"q": "Работает ли приложение офлайн?",
          "a": "Да! Все слова хранятся локально на устройстве. Приложение полностью работает без интернета. Сеть нужна только для оплаты подписки."},
         {"q": "Как найти нужное слово?",
@@ -34,13 +36,23 @@ FAQ_DATA = {
         {"q": "Как переключить тему оформления?",
          "a": "На главном экране нажмите на иконку ☀/🌙 в правом верхнем углу — приложение переключится между светлой и тёмной темой."},
     ],
+    "🧠 Тесты и квизы": [
+        {"q": "Как пройти тест?",
+         "a": "Два способа:\n1️⃣ На главном экране — карточка «Тесты и квизы» → выберите тему\n2️⃣ В любом разделе → нажмите иконку 🧠 рядом с подразделом\n\nТест содержит до 10 вопросов: половина — перевод en→ru, половина — ru→en."},
+        {"q": "Как считаются результаты?",
+         "a": "За каждый правильный ответ +1 балл. В конце — процент правильных:\n🏆 90–100% — отлично\n🎉 70–89% — хорошо\n👍 50–69% — неплохо\n📚 < 50% — стоит повторить"},
+        {"q": "Сохраняется ли история тестов?",
+         "a": "Да! Результаты сохраняются в разделе «Статистика»: общее число пройденных тестов и средний процент правильных ответов."},
+        {"q": "Почему в тесте не все слова?",
+         "a": "Для интереса тест выбирает до 10 случайных слов из выбранной темы. Пройдите ещё раз — вопросы будут другими!"},
+    ],
     "🇬🇧 Изучение английского": [
         {"q": "С чего начать изучение?",
          "a": "Начните с раздела «База»: алфавит, числа, цвета, местоимения. Это фундамент. Затем переходите к «Словарному запасу» — семья, еда, дом, животные."},
         {"q": "Что такое IPA-транскрипция?",
          "a": "IPA (International Phonetic Alphabet) — международный фонетический алфавит. Запись [ˈæp.əl] показывает правильное произношение. Знак ˈ означает ударение на следующий слог."},
         {"q": "Как эффективно запоминать слова?",
-         "a": "Метод интервального повторения:\n1. Учите 10–15 слов в день\n2. Повторяйте через 1, 3 и 7 дней\n3. Используйте слова в речи и письме\n4. Сложные добавляйте в избранное ❤"},
+         "a": "Метод интервального повторения:\n1. Учите 10–15 слов в день\n2. Повторяйте через 1, 3 и 7 дней\n3. Используйте слова в речи и письме\n4. Сложные добавляйте в избранное ❤\n5. Проверяйте себя в квизах 🧠"},
         {"q": "Сколько слов нужно знать?",
          "a": "• 1500–2000 — для повседневного общения\n• 3000–5000 — для чтения книг и новостей\n• 8000+ — для свободного владения\n\nВ приложении уже 200+ слов, постоянно добавляем новые."},
         {"q": "Как улучшить произношение?",
@@ -49,6 +61,53 @@ FAQ_DATA = {
          "a": "15–20 минут ежедневно эффективнее, чем 2 часа раз в неделю. Мозг лучше усваивает информацию небольшими порциями через короткие регулярные интервалы."},
     ],
 }
+
+# Палитра для кнопок-вариантов в квизе
+OPTION_COLORS = [
+    ft.Colors.BLUE_100,
+    ft.Colors.PURPLE_100,
+    ft.Colors.ORANGE_100,
+    ft.Colors.TEAL_100,
+]
+
+
+def build_quiz(words, count=10):
+    """Строит список вопросов квиза. Нужно минимум 4 слова."""
+    if len(words) < 4:
+        return []
+    all_words = all_words_flat()
+    sample = random.sample(words, min(count, len(words)))
+    questions = []
+    for i, w in enumerate(sample):
+        mode = "en_ru" if i % 2 == 0 else "ru_en"
+        if mode == "en_ru":
+            prompt = w["en"]
+            correct = w["ru"]
+            field = "ru"
+        else:
+            prompt = w["ru"]
+            correct = w["en"]
+            field = "en"
+
+        candidates = list({x[field] for x in all_words if x[field] != correct})
+        if len(candidates) < 3:
+            candidates = list({x[field] for x in words if x[field] != correct})
+        if len(candidates) < 3:
+            continue
+
+        distractors = random.sample(candidates, 3)
+        options = distractors + [correct]
+        random.shuffle(options)
+        correct_idx = options.index(correct)
+
+        questions.append({
+            "word": w,
+            "prompt": prompt,
+            "options": options,
+            "correct_idx": correct_idx,
+            "mode": mode,
+        })
+    return questions
 
 
 def main(page: ft.Page):
@@ -85,6 +144,10 @@ def main(page: ft.Page):
             page.views.append(support_view())
         elif route == "/faq":
             page.views.append(faq_view())
+        elif route == "/quiz_select":
+            page.views.append(quiz_select_view())
+        elif route == "/quiz":
+            page.views.append(quiz_view())
         page.update()
 
     # --- ГЛАВНОЕ МЕНЮ ---
@@ -94,23 +157,30 @@ def main(page: ft.Page):
         section_cards = []
         for name, item in DATA.items():
             is_locked = (name.startswith("5.") and state.license["tier"] == "free")
+            accent = item.get("color", "#7c9cf5")
             lock_icon = ft.Icon(ft.Icons.LOCK, color=ft.Colors.RED) if is_locked else ft.Icon(ft.Icons.CHEVRON_RIGHT, color=ft.Colors.GREY_400)
 
             section_cards.append(
                 ft.Container(
-                    content=ft.ListTile(
-                        leading=ft.Container(
-                            content=ft.Text(item["icon"], size=28),
-                            bgcolor=ft.Colors.with_opacity(0.1, ft.Colors.BLUE),
-                            border_radius=10, width=50, height=50,
-                            alignment=ft.Alignment.CENTER
+                    content=ft.Container(
+                        content=ft.ListTile(
+                            leading=ft.Container(
+                                content=ft.Text(item["icon"], size=28),
+                                bgcolor=ft.Colors.with_opacity(0.25, accent),
+                                border_radius=12, width=50, height=50,
+                                alignment=ft.Alignment.CENTER
+                            ),
+                            title=ft.Text(name, weight=ft.FontWeight.BOLD, size=16),
+                            subtitle=ft.Text(item["desc"], color=ft.Colors.GREY_600, size=12,
+                                             max_lines=2, overflow=ft.TextOverflow.ELLIPSIS),
+                            trailing=lock_icon,
                         ),
-                        title=ft.Text(name, weight=ft.FontWeight.BOLD, size=16),
-                        subtitle=ft.Text(item["desc"], color=ft.Colors.GREY_600, size=12, max_lines=2, overflow=ft.TextOverflow.ELLIPSIS),
-                        trailing=lock_icon,
+                        padding=5,
+                        border_radius=16,
                     ),
                     bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
-                    border_radius=20, padding=5,
+                    border=ft.border.all(2, accent),
+                    border_radius=20,
                     margin=ft.Margin(bottom=12),
                     shadow=ft.BoxShadow(blur_radius=15, color=ft.Colors.with_opacity(0.05, ft.Colors.BLACK), offset=ft.Offset(0, 5)),
                     on_click=lambda e, n=name, locked=is_locked: open_section(n, locked)
@@ -123,8 +193,9 @@ def main(page: ft.Page):
                     title=ft.Text("Perfect English", weight=ft.FontWeight.BOLD),
                     bgcolor=ft.Colors.TRANSPARENT,
                     actions=[
-                        ft.IconButton(ft.Icons.BAR_CHART, tooltip="Статистика", on_click=lambda e: navigate("/stats")),
-                        ft.IconButton(ft.Icons.BRIGHTNESS_6, on_click=toggle_theme)
+                        ft.IconButton(ft.Icons.BAR_CHART, tooltip="Статистика", icon_color=ft.Colors.PURPLE_400,
+                                      on_click=lambda e: navigate("/stats")),
+                        ft.IconButton(ft.Icons.BRIGHTNESS_6, icon_color=ft.Colors.ORANGE_400, on_click=toggle_theme)
                     ]
                 ),
                 ft.Container(
@@ -138,8 +209,28 @@ def main(page: ft.Page):
                                 ft.Icon(ft.Icons.DIAMOND, color=ft.Colors.ORANGE_400, size=30)
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, vertical_alignment=ft.CrossAxisAlignment.CENTER),
                             bgcolor=ft.Colors.BLUE_600, padding=20,
-                            border_radius=20, margin=ft.Margin(bottom=20),
+                            border_radius=20, margin=ft.Margin(bottom=15),
                             on_click=lambda e: navigate("/subscription")
+                        ),
+                        # Карточка ТЕСТЫ
+                        ft.Container(
+                            content=ft.Row([
+                                ft.Container(
+                                    content=ft.Text("🧠", size=32),
+                                    width=60, height=60,
+                                    alignment=ft.Alignment.CENTER,
+                                    bgcolor=ft.Colors.with_opacity(0.25, ft.Colors.WHITE),
+                                    border_radius=15,
+                                ),
+                                ft.Column([
+                                    ft.Text("Тесты и квизы", weight=ft.FontWeight.BOLD, size=18, color=ft.Colors.WHITE),
+                                    ft.Text("Проверьте свои знания", size=12, color=ft.Colors.WHITE_70),
+                                ], spacing=2, expand=True),
+                                ft.Icon(ft.Icons.CHEVRON_RIGHT, color=ft.Colors.WHITE),
+                            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, vertical_alignment=ft.CrossAxisAlignment.CENTER),
+                            bgcolor=ft.Colors.DEEP_ORANGE_400, padding=20,
+                            border_radius=20, margin=ft.Margin(bottom=20),
+                            on_click=lambda e: navigate("/quiz_select")
                         ),
                         ft.Text("Разделы", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_800),
                         ft.Container(height=10),
@@ -165,6 +256,8 @@ def main(page: ft.Page):
         rules = [
             (["привет", "здравств", "hello", "hi", "добр"],
              "👋 Здравствуйте! Рад помочь. Задайте ваш вопрос или выберите тему быстрого ответа ниже.\n\n💡 Совет: в разделе ❓ FAQ собраны ответы на самые частые вопросы."),
+            (["тест", "квиз", "quiz", "провер"],
+             "🧠 Тесты и квизы доступны двумя способами:\n\n1️⃣ На главной — карточка «Тесты и квизы»\n2️⃣ В любом разделе — иконка 🧠 рядом с подразделом\n\nВ каждом тесте до 10 случайных вопросов: половина переводов en→ru, половина ru→en. Результаты сохраняются в статистике!"),
             (["оплат", "купить", "оформ", "подписк", "тариф", "прем", "плюс"],
              "💳 Оформить подписку можно двумя способами:\n\n1️⃣ Нажать на голубую карточку тарифа на главном экране\n2️⃣ Перейти в раздел «Подписка»\n\nТарифы:\n⭐ Плюс — 199 ₽/мес (все разделы)\n👑 Премиум — 499 ₽/мес (безлимит + экспорт)\n\nЕсть 7 дней бесплатного пробного Плюса!"),
             (["промокод", "скидк", "акци", "купон"],
@@ -174,11 +267,11 @@ def main(page: ft.Page):
             (["возврат", "вернуть", "отмен", "деньг"],
              "💸 Возврат возможен в течение 14 дней после оплаты.\n\nНапишите на support@perfectenglish.app и укажите:\n• Дату покупки\n• Название тарифа\n• Причину возврата\n\nОбработаем в течение 2 рабочих дней."),
             (["слов", "карточк", "учить", "учиться", "запомина", "зубр"],
-             "📚 Рекомендую метод интервального повторения:\n\n1️⃣ Учите 10–15 слов в день\n2️⃣ Возвращайтесь к ним через 1, 3 и 7 дней\n3️⃣ Сложные слова добавляйте в ❤ Избранное\n4️⃣ Проговаривайте слова вслух\n\nОтмечайте выученное зелёной кнопкой ✓ — так работает статистика."),
+             "📚 Рекомендую метод интервального повторения:\n\n1️⃣ Учите 10–15 слов в день\n2️⃣ Возвращайтесь к ним через 1, 3 и 7 дней\n3️⃣ Сложные слова добавляйте в ❤ Избранное\n4️⃣ Проверяйте себя в квизах 🧠\n\nОтмечайте выученное зелёной кнопкой ✓ — так работает статистика."),
             (["транскрипц", "ipa", "произнош", "звук", "акцент"],
              "🔊 IPA — это международный фонетический алфавит.\n\nПример: apple [ˈæp.əl]\n• ˈ — ударение на следующий слог\n• æ — открытый звук «э»\n• ə — безударный «шва»\n\nСлушайте эталон и повторяйте вслух — тренируйте сложные звуки: θ, ð, ŋ, w, r."),
             (["статистик", "прогресс", "streak", "серия"],
-             "📊 Раздел «Статистика» доступен по иконке 📈 в верхней панели главного экрана.\n\nТам вы увидите:\n🔥 серию дней обучения\n📖 количество изученных слов\n⭐ количество слов в избранном"),
+             "📊 Раздел «Статистика» доступен по иконке 📈 в верхней панели главного экрана.\n\nТам вы увидите:\n🔥 серию дней обучения\n📖 количество изученных слов\n⭐ количество слов в избранном\n🧠 результаты квизов"),
             (["избранн", "любим", "сердечк"],
              "❤ Чтобы добавить слово в избранное — откройте карточку и нажмите на сердечко в правом верхнем углу.\n\nВсе избранные слова доступны в нижней вкладке «Избранное»."),
             (["поиск", "найти", "где найти"],
@@ -188,7 +281,7 @@ def main(page: ft.Page):
             (["спасиб", "благодар", "thanks"],
              "😊 Всегда рады помочь! Если появятся ещё вопросы — обращайтесь. Успехов в изучении английского! 🇬🇧"),
             (["faq", "вопрос", "част"],
-             "❓ Раздел «Частые вопросы» открывается по кнопке в правом верхнем углу этого экрана — или нажмите на чип «FAQ» ниже.\n\nТам 18 ответов по трём категориям: подписка, приложение, изучение английского."),
+             "❓ Раздел «Частые вопросы» открывается по кнопке в правом верхнем углу этого экрана — или нажмите на чип «FAQ» ниже.\n\nТам ответы по четырём категориям: подписка, приложение, тесты, изучение английского."),
             (["приложен", "версия", "обновл"],
              "📱 Вы используете актуальную версию Perfect English 1.0.0. Следите за обновлениями — мы регулярно добавляем новые слова и функции."),
         ]
@@ -209,7 +302,7 @@ def main(page: ft.Page):
                     color=ft.Colors.WHITE if is_user else ft.Colors.BLACK,
                     size=14,
                 ),
-                bgcolor=ft.Colors.BLUE_400 if is_user else ft.Colors.GREY_200,
+                bgcolor=ft.Colors.BLUE_500 if is_user else ft.Colors.GREY_200,
                 padding=15,
                 border_radius=ft.BorderRadius(
                     top_left=15, top_right=15,
@@ -236,7 +329,7 @@ def main(page: ft.Page):
                         ft.Row([
                             ft.Container(
                                 content=ft.Row([
-                                    ft.ProgressRing(width=14, height=14, stroke_width=2),
+                                    ft.ProgressRing(width=14, height=14, stroke_width=2, color=ft.Colors.BLUE_400),
                                     ft.Text("печатает…", size=12, color=ft.Colors.GREY_600, italic=True)
                                 ], spacing=8),
                                 bgcolor=ft.Colors.GREY_200,
@@ -282,21 +375,24 @@ def main(page: ft.Page):
             on_submit=send_message
         )
 
-        def make_chip(label, text):
+        def make_chip(label, text, color):
             return ft.Chip(
-                label=ft.Text(label, size=12),
+                label=ft.Text(label, size=12, color=ft.Colors.WHITE),
+                bgcolor=color,
                 on_click=lambda e: send_text(text),
             )
 
         quick_replies = ft.Container(
             content=ft.ListView(
                 controls=[
-                    make_chip("💳 Подписка", "Как оформить подписку?"),
-                    make_chip("💸 Возврат", "Хочу вернуть деньги"),
-                    make_chip("⚠ Проблема", "У меня проблема с приложением"),
-                    make_chip("📚 Обучение", "Как эффективнее учить слова?"),
-                    make_chip("🔊 Произношение", "Как улучшить произношение?"),
-                    ft.Chip(label=ft.Text("❓ FAQ", size=12),
+                    make_chip("🧠 Тесты", "Как пройти тест?", ft.Colors.DEEP_ORANGE_400),
+                    make_chip("💳 Подписка", "Как оформить подписку?", ft.Colors.BLUE_400),
+                    make_chip("💸 Возврат", "Хочу вернуть деньги", ft.Colors.RED_400),
+                    make_chip("⚠ Проблема", "У меня проблема с приложением", ft.Colors.AMBER_700),
+                    make_chip("📚 Обучение", "Как эффективнее учить слова?", ft.Colors.GREEN_600),
+                    make_chip("🔊 Произношение", "Как улучшить произношение?", ft.Colors.PURPLE_400),
+                    ft.Chip(label=ft.Text("❓ FAQ", size=12, color=ft.Colors.WHITE),
+                            bgcolor=ft.Colors.TEAL_500,
                             on_click=lambda e: navigate("/faq")),
                 ],
                 spacing=8,
@@ -313,7 +409,7 @@ def main(page: ft.Page):
                     bgcolor=ft.Colors.TRANSPARENT,
                     leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/")),
                     actions=[
-                        ft.IconButton(ft.Icons.HELP_OUTLINE, tooltip="Частые вопросы",
+                        ft.IconButton(ft.Icons.HELP_OUTLINE, icon_color=ft.Colors.TEAL_500, tooltip="Частые вопросы",
                                       on_click=lambda e: navigate("/faq"))
                     ]
                 ),
@@ -322,7 +418,13 @@ def main(page: ft.Page):
                 ft.Container(
                     content=ft.Row([
                         input_field,
-                        ft.IconButton(ft.Icons.SEND, icon_color=ft.Colors.BLUE, on_click=send_message)
+                        ft.Container(
+                            content=ft.Icon(ft.Icons.SEND, color=ft.Colors.WHITE),
+                            bgcolor=ft.Colors.BLUE_500,
+                            padding=10,
+                            border_radius=25,
+                            on_click=send_message
+                        )
                     ]),
                     padding=10, bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST
                 )
@@ -404,7 +506,10 @@ def main(page: ft.Page):
                     content=ft.Column([
                         ft.Container(
                             content=ft.Row([
-                                ft.Icon(ft.Icons.SUPPORT_AGENT, color=ft.Colors.BLUE, size=30),
+                                ft.Container(
+                                    content=ft.Icon(ft.Icons.SUPPORT_AGENT, color=ft.Colors.WHITE, size=24),
+                                    bgcolor=ft.Colors.BLUE_500, padding=10, border_radius=10,
+                                ),
                                 ft.Column([
                                     ft.Text("Не нашли ответ?", weight=ft.FontWeight.BOLD, size=14),
                                     ft.Text("Задайте вопрос в поддержке", size=12, color=ft.Colors.GREY_600),
@@ -454,6 +559,7 @@ def main(page: ft.Page):
     def section_view():
         name = current_section_data["name"]
         item = current_section_data["item"]
+        accent = item.get("color", "#7c9cf5")
         subs_list = ft.Column(spacing=10, scroll=ft.ScrollMode.AUTO, expand=True,
                               horizontal_alignment=ft.CrossAxisAlignment.STRETCH)
 
@@ -462,15 +568,40 @@ def main(page: ft.Page):
             for sub_name, sub_item in item["subsections"].items():
                 if query and query.lower() not in sub_name.lower():
                     continue
+                words = collect_words(sub_item)
+                has_quiz = len(words) >= 4
+
+                actions = ft.Row([
+                    ft.Container(
+                        content=ft.Icon(ft.Icons.STYLE, color=ft.Colors.WHITE, size=20),
+                        bgcolor=ft.Colors.BLUE_500,
+                        width=38, height=38,
+                        border_radius=10,
+                        alignment=ft.Alignment.CENTER,
+                        on_click=lambda e, n=sub_name, i=sub_item: open_flashcards(n, i),
+                    ),
+                    ft.Container(
+                        content=ft.Icon(ft.Icons.QUIZ, color=ft.Colors.WHITE, size=20),
+                        bgcolor=ft.Colors.DEEP_ORANGE_400 if has_quiz else ft.Colors.GREY_400,
+                        width=38, height=38,
+                        border_radius=10,
+                        alignment=ft.Alignment.CENTER,
+                        on_click=lambda e, n=sub_name, i=sub_item, has=has_quiz: (
+                            start_quiz_by_words(collect_words(i), n) if has else None
+                        ),
+                    ),
+                ], spacing=6, tight=True)
+
                 subs_list.controls.append(
                     ft.Container(
                         content=ft.ListTile(
                             title=ft.Text(sub_name, weight=ft.FontWeight.W_600),
-                            trailing=ft.Icon(ft.Icons.PLAY_CIRCLE_FILL, color=ft.Colors.BLUE_400, size=30),
+                            subtitle=ft.Text(f"{len(words)} слов", size=11, color=ft.Colors.GREY_600),
+                            trailing=actions,
                         ),
                         bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
+                        border=ft.border.all(1, ft.Colors.with_opacity(0.3, accent)),
                         border_radius=15, padding=5,
-                        on_click=lambda e, n=sub_name, i=sub_item: open_flashcards(n, i)
                     )
                 )
             page.update()
@@ -501,6 +632,8 @@ def main(page: ft.Page):
 
     def open_flashcards(title, sub_item):
         words = sub_item.get("words", [])
+        if "subsections" in sub_item:
+            words = collect_words(sub_item)
         if not words:
             return
         current_cards_data["words"] = words
@@ -571,8 +704,10 @@ def main(page: ft.Page):
                                         italic=True, text_align=ft.TextAlign.CENTER),
                                 ft.Container(height=30),
                                 ft.Button(
-                                    content=ft.Row([ft.Icon(ft.Icons.VISIBILITY), ft.Text("Показать перевод")],
+                                    content=ft.Row([ft.Icon(ft.Icons.VISIBILITY, color=ft.Colors.WHITE),
+                                                    ft.Text("Показать перевод", color=ft.Colors.WHITE)],
                                                    alignment=ft.MainAxisAlignment.CENTER, tight=True),
+                                    bgcolor=ft.Colors.PURPLE_400,
                                     on_click=lambda e: page.show_dialog(ft.AlertDialog(
                                         title=ft.Text("Перевод", text_align=ft.TextAlign.CENTER),
                                         content=ft.Text(word["ru"], size=24, text_align=ft.TextAlign.CENTER),
@@ -589,18 +724,36 @@ def main(page: ft.Page):
                         ft.Container(height=20),
                         ft.Container(
                             content=ft.Row([
-                                ft.IconButton(ft.Icons.ARROW_BACK_IOS, icon_size=28, on_click=prev_word),
+                                ft.Container(
+                                    content=ft.Icon(ft.Icons.ARROW_BACK_IOS, color=ft.Colors.WHITE, size=24),
+                                    bgcolor=ft.Colors.INDIGO_400,
+                                    width=50, height=50, border_radius=25,
+                                    alignment=ft.Alignment.CENTER,
+                                    on_click=prev_word,
+                                ),
                                 ft.Row([
-                                    ft.Button(content=ft.Icon(ft.Icons.CLOSE, color=ft.Colors.WHITE),
-                                              bgcolor=ft.Colors.RED_400, on_click=next_word,
-                                              width=60, height=60,
-                                              style=ft.ButtonStyle(shape=ft.CircleBorder())),
-                                    ft.Button(content=ft.Icon(ft.Icons.CHECK, color=ft.Colors.WHITE),
-                                              bgcolor=ft.Colors.GREEN_400, on_click=mark_known,
-                                              width=60, height=60,
-                                              style=ft.ButtonStyle(shape=ft.CircleBorder())),
+                                    ft.Container(
+                                        content=ft.Icon(ft.Icons.CLOSE, color=ft.Colors.WHITE, size=32),
+                                        bgcolor=ft.Colors.RED_400,
+                                        width=60, height=60, border_radius=30,
+                                        alignment=ft.Alignment.CENTER,
+                                        on_click=next_word,
+                                    ),
+                                    ft.Container(
+                                        content=ft.Icon(ft.Icons.CHECK, color=ft.Colors.WHITE, size=32),
+                                        bgcolor=ft.Colors.GREEN_500,
+                                        width=60, height=60, border_radius=30,
+                                        alignment=ft.Alignment.CENTER,
+                                        on_click=mark_known,
+                                    ),
                                 ], spacing=40, alignment=ft.MainAxisAlignment.CENTER),
-                                ft.IconButton(ft.Icons.ARROW_FORWARD_IOS, icon_size=28, on_click=next_word),
+                                ft.Container(
+                                    content=ft.Icon(ft.Icons.ARROW_FORWARD_IOS, color=ft.Colors.WHITE, size=24),
+                                    bgcolor=ft.Colors.INDIGO_400,
+                                    width=50, height=50, border_radius=25,
+                                    alignment=ft.Alignment.CENTER,
+                                    on_click=next_word,
+                                ),
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                             padding=ft.Padding(left=20, right=20),
                         )
@@ -610,13 +763,380 @@ def main(page: ft.Page):
             ]
         )
 
+    # --- КВИЗЫ ---
+    current_quiz = {
+        "questions": [],
+        "current": 0,
+        "score": 0,
+        "section_name": "",
+        "selected_idx": None,
+    }
+
+    def start_quiz_by_words(words_pool, title):
+        if len(words_pool) < 4:
+            page.show_dialog(ft.AlertDialog(
+                title=ft.Text("Мало слов"),
+                content=ft.Text(f"В теме «{title}» только {len(words_pool)} слов(а). Для теста нужно минимум 4."),
+                actions=[ft.TextButton("Ок", on_click=lambda e: page.pop_dialog())]
+            ))
+            return
+        questions = build_quiz(words_pool)
+        if not questions:
+            return
+        current_quiz["questions"] = questions
+        current_quiz["current"] = 0
+        current_quiz["score"] = 0
+        current_quiz["section_name"] = title
+        current_quiz["selected_idx"] = None
+        navigate("/quiz")
+
+    def quiz_select_view():
+        cards = []
+        # Случайные со всех слов
+        all_words = all_words_flat()
+        cards.append(
+            ft.Container(
+                content=ft.Row([
+                    ft.Container(
+                        content=ft.Text("🎲", size=32),
+                        width=60, height=60,
+                        alignment=ft.Alignment.CENTER,
+                        bgcolor=ft.Colors.with_opacity(0.25, ft.Colors.WHITE),
+                        border_radius=15,
+                    ),
+                    ft.Column([
+                        ft.Text("Случайный тест", weight=ft.FontWeight.BOLD, size=16, color=ft.Colors.WHITE),
+                        ft.Text(f"10 вопросов из {len(all_words)} слов", size=12, color=ft.Colors.WHITE_70),
+                    ], spacing=2, expand=True),
+                    ft.Icon(ft.Icons.CHEVRON_RIGHT, color=ft.Colors.WHITE),
+                ]),
+                bgcolor=ft.Colors.DEEP_ORANGE_400,
+                padding=15, border_radius=18, margin=ft.Margin(bottom=10),
+                on_click=lambda e: start_quiz_by_words(all_words, "🎲 Случайный тест")
+            )
+        )
+
+        # По разделам
+        for name, item in DATA.items():
+            words = collect_words(item)
+            accent = item.get("color", "#7c9cf5")
+            has_enough = len(words) >= 4
+            cards.append(
+                ft.Container(
+                    content=ft.Row([
+                        ft.Container(
+                            content=ft.Text(item["icon"], size=28),
+                            width=60, height=60,
+                            alignment=ft.Alignment.CENTER,
+                            bgcolor=ft.Colors.with_opacity(0.25, accent),
+                            border_radius=15,
+                        ),
+                        ft.Column([
+                            ft.Text(name, weight=ft.FontWeight.BOLD, size=15),
+                            ft.Text(f"{len(words)} слов", size=12, color=ft.Colors.GREY_600),
+                        ], spacing=2, expand=True),
+                        ft.Icon(ft.Icons.QUIZ, color=accent, size=22),
+                    ]),
+                    bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
+                    border=ft.border.all(2, accent),
+                    padding=15, border_radius=18, margin=ft.Margin(bottom=10),
+                    on_click=lambda e, w=words, n=name, ok=has_enough: (
+                        start_quiz_by_words(w, n) if ok else None
+                    ) if ok else None,
+                )
+            )
+
+        return ft.View(
+            controls=[
+                ft.AppBar(
+                    title=ft.Text("Выберите тему", weight=ft.FontWeight.BOLD),
+                    bgcolor=ft.Colors.TRANSPARENT,
+                    leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/")),
+                ),
+                ft.Container(
+                    content=ft.Column([
+                        ft.Text("🧠 Проверьте свои знания", size=20, weight=ft.FontWeight.BOLD,
+                                color=ft.Colors.DEEP_ORANGE_400),
+                        ft.Text("Каждый тест — до 10 случайных вопросов. В конце вы увидите свой результат.",
+                                size=12, color=ft.Colors.GREY_600),
+                        ft.Container(height=15),
+                        ft.Column(cards, spacing=0),
+                    ], scroll=ft.ScrollMode.AUTO, expand=True,
+                       horizontal_alignment=ft.CrossAxisAlignment.STRETCH),
+                    padding=20, expand=True,
+                )
+            ],
+            navigation_bar=ft.NavigationBar(
+                destinations=[
+                    ft.NavigationBarDestination(icon=ft.Icons.HOME, label="Главная"),
+                    ft.NavigationBarDestination(icon=ft.Icons.SEARCH, label="Поиск"),
+                    ft.NavigationBarDestination(icon=ft.Icons.FAVORITE, label="Избранное"),
+                    ft.NavigationBarDestination(icon=ft.Icons.SUPPORT_AGENT, label="Поддержка"),
+                ],
+                on_change=lambda e: navigate(["/", "/search", "/favorites", "/support"][e.control.selected_index])
+            )
+        )
+
+    def save_quiz_result():
+        if "quiz_history" not in state.progress:
+            state.progress["quiz_history"] = []
+        state.progress["quiz_history"].append({
+            "section": current_quiz["section_name"],
+            "score": current_quiz["score"],
+            "total": len(current_quiz["questions"]),
+            "date": str(date.today()),
+        })
+        state.progress["quiz_history"] = state.progress["quiz_history"][-50:]
+        state.save_progress()
+
+    def quiz_result_view():
+        total = len(current_quiz["questions"])
+        score = current_quiz["score"]
+        pct = int(score / total * 100) if total else 0
+
+        save_quiz_result()
+
+        if pct >= 90:
+            emoji, msg, color = "🏆", "Отлично!", ft.Colors.AMBER_500
+        elif pct >= 70:
+            emoji, msg, color = "🎉", "Хорошо!", ft.Colors.GREEN_500
+        elif pct >= 50:
+            emoji, msg, color = "👍", "Неплохо", ft.Colors.BLUE_500
+        else:
+            emoji, msg, color = "📚", "Стоит повторить", ft.Colors.ORANGE_500
+
+        def restart(e):
+            start_quiz_by_words(
+                [q["word"] for q in current_quiz["questions"]],
+                current_quiz["section_name"]
+            )
+
+        return ft.View(
+            controls=[
+                ft.AppBar(title=ft.Text("Результат"), bgcolor=ft.Colors.TRANSPARENT,
+                          leading=ft.IconButton(ft.Icons.ARROW_BACK,
+                                                on_click=lambda e: navigate("/quiz_select"))),
+                ft.Container(
+                    content=ft.Column([
+                        ft.Container(
+                            content=ft.Column([
+                                ft.Text(emoji, size=80, text_align=ft.TextAlign.CENTER),
+                                ft.Text(msg, size=28, weight=ft.FontWeight.BOLD, color=color,
+                                        text_align=ft.TextAlign.CENTER),
+                                ft.Container(height=10),
+                                ft.Text(f"{score} из {total}", size=36, weight=ft.FontWeight.BOLD,
+                                        text_align=ft.TextAlign.CENTER),
+                                ft.Text(f"Правильных ответов: {pct}%", size=14, color=ft.Colors.GREY_600,
+                                        text_align=ft.TextAlign.CENTER),
+                                ft.Container(height=10),
+                                ft.Text(f"Тема: {current_quiz['section_name']}", size=12,
+                                        color=ft.Colors.GREY_500, text_align=ft.TextAlign.CENTER),
+                            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                            bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
+                            padding=40, border_radius=25,
+                            border=ft.border.all(3, color),
+                            expand=True,
+                        ),
+                        ft.Container(height=20),
+                        ft.Button(
+                            content=ft.Row([
+                                ft.Icon(ft.Icons.REFRESH, color=ft.Colors.WHITE),
+                                ft.Text("Пройти ещё раз", color=ft.Colors.WHITE, size=16),
+                            ], alignment=ft.MainAxisAlignment.CENTER, tight=True),
+                            bgcolor=ft.Colors.DEEP_ORANGE_400,
+                            height=55, width=float("inf"),
+                            on_click=restart,
+                        ),
+                        ft.Container(height=10),
+                        ft.Button(
+                            content=ft.Text("Выбрать другую тему", color=ft.Colors.WHITE, size=16),
+                            bgcolor=ft.Colors.BLUE_500,
+                            height=55, width=float("inf"),
+                            on_click=lambda e: navigate("/quiz_select"),
+                        ),
+                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, expand=True),
+                    padding=20, expand=True,
+                )
+            ]
+        )
+
+    def quiz_view():
+        q_data = current_quiz
+        if not q_data["questions"]:
+            return ft.View(controls=[ft.Text("Нет вопросов")])
+
+        total = len(q_data["questions"])
+        current = q_data["current"]
+
+        if current >= total:
+            return quiz_result_view()
+
+        q = q_data["questions"][current]
+        selected = q_data["selected_idx"]
+        answered = selected is not None
+        is_correct = answered and selected == q["correct_idx"]
+
+        def answer(idx):
+            if q_data["selected_idx"] is not None:
+                return
+            q_data["selected_idx"] = idx
+            if idx == q["correct_idx"]:
+                q_data["score"] += 1
+            page.views[-1] = quiz_view()
+            page.update()
+
+        def next_q(e):
+            q_data["current"] += 1
+            q_data["selected_idx"] = None
+            page.views[-1] = quiz_view()
+            page.update()
+
+        def exit_quiz(e):
+            page.show_dialog(ft.AlertDialog(
+                title=ft.Text("Выйти из теста?"),
+                content=ft.Text("Прогресс не сохранится."),
+                actions=[
+                    ft.TextButton("Отмена", on_click=lambda e: page.pop_dialog()),
+                    ft.TextButton("Выйти", on_click=lambda e: (page.pop_dialog(), navigate("/quiz_select")))
+                ]
+            ))
+
+        # Прогресс-бар
+        progress = ft.ProgressBar(
+            value=(current + 1) / total,
+            bgcolor=ft.Colors.GREY_200,
+            color=ft.Colors.DEEP_ORANGE_400,
+            height=8,
+        )
+
+        # Опции
+        option_buttons = []
+        for i, opt in enumerate(q["options"]):
+            base_color = OPTION_COLORS[i]
+            text_color = ft.Colors.BLACK
+            if answered:
+                if i == q["correct_idx"]:
+                    base_color = ft.Colors.GREEN_500
+                    text_color = ft.Colors.WHITE
+                elif i == selected:
+                    base_color = ft.Colors.RED_500
+                    text_color = ft.Colors.WHITE
+
+            option_buttons.append(
+                ft.Container(
+                    content=ft.Row([
+                        ft.Container(
+                            content=ft.Text("ABCD"[i], weight=ft.FontWeight.BOLD,
+                                            color=text_color, size=15),
+                            width=32, height=32,
+                            alignment=ft.Alignment.CENTER,
+                            bgcolor=ft.Colors.with_opacity(0.2, ft.Colors.BLACK),
+                            border_radius=16,
+                        ),
+                        ft.Text(opt, size=15, expand=True, color=text_color,
+                                weight=ft.FontWeight.W_500),
+                    ], spacing=12),
+                    bgcolor=base_color,
+                    padding=15,
+                    border_radius=15,
+                    on_click=lambda e, idx=i: answer(idx),
+                )
+            )
+
+        feedback = ft.Container()
+        if answered:
+            if is_correct:
+                feedback = ft.Container(
+                    content=ft.Row([
+                        ft.Icon(ft.Icons.CHECK_CIRCLE, color=ft.Colors.WHITE, size=20),
+                        ft.Text("Верно!", color=ft.Colors.WHITE, weight=ft.FontWeight.BOLD),
+                    ], alignment=ft.MainAxisAlignment.CENTER),
+                    bgcolor=ft.Colors.GREEN_500,
+                    padding=12, border_radius=10,
+                    margin=ft.Margin(top=10),
+                )
+            else:
+                feedback = ft.Container(
+                    content=ft.Column([
+                        ft.Row([
+                            ft.Icon(ft.Icons.CANCEL, color=ft.Colors.WHITE, size=20),
+                            ft.Text("Неверно", color=ft.Colors.WHITE, weight=ft.FontWeight.BOLD),
+                        ], alignment=ft.MainAxisAlignment.CENTER),
+                        ft.Text(f"Правильный ответ: {q['options'][q['correct_idx']]}",
+                                color=ft.Colors.WHITE, size=13, text_align=ft.TextAlign.CENTER),
+                    ]),
+                    bgcolor=ft.Colors.RED_500,
+                    padding=12, border_radius=10,
+                    margin=ft.Margin(top=10),
+                )
+
+        return ft.View(
+            controls=[
+                ft.AppBar(
+                    title=ft.Text(q_data["section_name"], max_lines=1,
+                                  overflow=ft.TextOverflow.ELLIPSIS),
+                    bgcolor=ft.Colors.TRANSPARENT,
+                    leading=ft.IconButton(ft.Icons.CLOSE, on_click=exit_quiz),
+                    actions=[
+                        ft.Container(
+                            content=ft.Text(f"{q_data['score']} / {current + 1}",
+                                            weight=ft.FontWeight.BOLD, size=14,
+                                            color=ft.Colors.DEEP_ORANGE_400),
+                            padding=ft.Padding(left=10, right=15, top=6, bottom=6),
+                        )
+                    ]
+                ),
+                ft.Container(
+                    content=ft.Column([
+                        progress,
+                        ft.Container(height=20),
+                        ft.Text(f"Вопрос {current + 1} из {total}", size=13,
+                                color=ft.Colors.GREY_600, weight=ft.FontWeight.W_500),
+                        ft.Container(height=10),
+                        ft.Container(
+                            content=ft.Column([
+                                ft.Text(
+                                    "Выберите перевод" if q["mode"] == "en_ru" else "Выберите слово",
+                                    size=12, color=ft.Colors.GREY_600,
+                                    text_align=ft.TextAlign.CENTER,
+                                ),
+                                ft.Container(height=15),
+                                ft.Text(q["prompt"], size=26, weight=ft.FontWeight.BOLD,
+                                        text_align=ft.TextAlign.CENTER),
+                            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                            bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
+                            padding=30, border_radius=20,
+                            border=ft.border.all(2, ft.Colors.DEEP_ORANGE_200),
+                            margin=ft.Margin(bottom=20),
+                        ),
+                        ft.Column(option_buttons, spacing=10),
+                        feedback,
+                        ft.Container(expand=True),
+                        ft.Button(
+                            content=ft.Row([
+                                ft.Text("Дальше" if current + 1 < total else "Завершить",
+                                        color=ft.Colors.WHITE, size=16, weight=ft.FontWeight.BOLD),
+                                ft.Icon(ft.Icons.ARROW_FORWARD, color=ft.Colors.WHITE),
+                            ], alignment=ft.MainAxisAlignment.CENTER, tight=True),
+                            bgcolor=ft.Colors.DEEP_ORANGE_400 if answered else ft.Colors.GREY_400,
+                            disabled=not answered,
+                            height=55, width=float("inf"),
+                            on_click=next_q,
+                            margin=ft.Margin(top=15),
+                        )
+                    ], expand=True),
+                    padding=20, expand=True,
+                )
+            ]
+        )
+
     # --- ПОДПИСКА ---
     def subscription_view():
         current_tier = state.license["tier"]
 
-        def make_card(name, tier_id, price, features):
+        def make_card(name, tier_id, price, features, color):
             is_current = (tier_id == current_tier)
-            card_bg = ft.Colors.BLUE_50 if is_current else ft.Colors.SURFACE_CONTAINER_HIGHEST
+            card_bg = ft.Colors.with_opacity(0.1, color) if is_current else ft.Colors.SURFACE_CONTAINER_HIGHEST
 
             def process_payment(e):
                 dlg = ft.AlertDialog(title=ft.Text("Оплата"), content=ft.Text("Соединение с банком…"))
@@ -634,21 +1154,29 @@ def main(page: ft.Page):
                 threading.Timer(2.0, finish).start()
 
             btn = ft.Button(
-                content="Текущий план" if is_current else "Оформить",
+                content=ft.Text("Текущий план" if is_current else "Оформить",
+                                color=ft.Colors.WHITE, weight=ft.FontWeight.BOLD, size=16),
                 disabled=is_current,
-                bgcolor=ft.Colors.BLUE if not is_current else ft.Colors.GREY_300,
-                color=ft.Colors.WHITE, height=50, width=float("inf"),
+                bgcolor=color if not is_current else ft.Colors.GREY_400,
+                height=50, width=float("inf"),
                 on_click=process_payment
             )
             return ft.Container(
                 content=ft.Column([
-                    ft.Text(f"{TIERS[tier_id]['icon']} {name}", size=22, weight=ft.FontWeight.BOLD),
+                    ft.Row([
+                        ft.Text(f"{TIERS[tier_id]['icon']} {name}", size=22, weight=ft.FontWeight.BOLD, expand=True),
+                        ft.Container(
+                            content=ft.Icon(ft.Icons.DIAMOND, color=color, size=22),
+                            bgcolor=ft.Colors.with_opacity(0.2, color),
+                            padding=8, border_radius=20,
+                        ),
+                    ]),
                     ft.Text(f"{price} ₽/мес" if price > 0 else "Бесплатно", size=28,
-                            color=ft.Colors.BLUE, weight=ft.FontWeight.BOLD),
+                            color=color, weight=ft.FontWeight.BOLD),
                     ft.Divider(),
                     ft.Column([
                         ft.Row([
-                            ft.Icon(ft.Icons.CHECK_CIRCLE, color=ft.Colors.GREEN, size=16),
+                            ft.Icon(ft.Icons.CHECK_CIRCLE, color=color, size=18),
                             ft.Text(f, size=14, expand=True),
                         ])
                         for f in features
@@ -656,6 +1184,7 @@ def main(page: ft.Page):
                     btn
                 ], spacing=8),
                 bgcolor=card_bg, border_radius=20, padding=25, margin=ft.Margin(bottom=15),
+                border=ft.border.all(2, color),
             )
 
         return ft.View(
@@ -664,9 +1193,15 @@ def main(page: ft.Page):
                           leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
                 ft.Container(
                     content=ft.Column([
-                        make_card("Бесплатный", "free", 0, ["30 слов в день", "Базовый раздел"]),
-                        make_card("Плюс", "plus", 199, ["500 слов в день", "Все разделы", "Продвинутый уровень"]),
-                        make_card("Премиум", "premium", 499, ["Безлимит", "Экспорт прогресса", "Поддержка"]),
+                        make_card("Бесплатный", "free", 0,
+                                  ["30 слов в день", "Базовый раздел"],
+                                  ft.Colors.GREY_600),
+                        make_card("Плюс", "plus", 199,
+                                  ["500 слов в день", "Все разделы", "Продвинутый уровень"],
+                                  ft.Colors.BLUE_500),
+                        make_card("Премиум", "premium", 499,
+                                  ["Безлимит", "Экспорт прогресса", "Приоритетная поддержка"],
+                                  ft.Colors.AMBER_600),
                     ], scroll=ft.ScrollMode.AUTO, expand=True,
                        horizontal_alignment=ft.CrossAxisAlignment.STRETCH),
                     padding=20, expand=True
@@ -693,7 +1228,8 @@ def main(page: ft.Page):
                         title=ft.Text(w["en"], weight=ft.FontWeight.BOLD),
                         subtitle=ft.Text(w["ru"])),
                         bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
-                        border_radius=15, padding=5)
+                        border_radius=15, padding=5,
+                        border=ft.border.all(1, ft.Colors.BLUE_200))
                 )
             page.update()
 
@@ -703,7 +1239,8 @@ def main(page: ft.Page):
                           leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
                 ft.Container(content=ft.Column([
                     ft.TextField(hint_text="Введите слово…", on_change=on_search,
-                                 prefix_icon=ft.Icons.SEARCH, border_radius=15, filled=True),
+                                 prefix_icon=ft.Icons.SEARCH, border_radius=15, filled=True,
+                                 focused_border_color=ft.Colors.BLUE_500),
                     ft.Container(height=10),
                     results_list,
                 ], expand=True), padding=20, expand=True)
@@ -725,11 +1262,24 @@ def main(page: ft.Page):
         items = [
             ft.Container(content=ft.ListTile(
                 title=ft.Text(w["en"], weight=ft.FontWeight.BOLD),
-                subtitle=ft.Text(w["ru"])),
+                subtitle=ft.Text(w["ru"]),
+                leading=ft.Icon(ft.Icons.FAVORITE, color=ft.Colors.RED_400, size=20)),
                 bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
-                border_radius=15, padding=5, margin=ft.Margin(bottom=5))
+                border_radius=15, padding=5, margin=ft.Margin(bottom=5),
+                border=ft.border.all(1, ft.Colors.PINK_200))
             for w in fav_words
-        ] if fav_words else [ft.Text("Вы пока не добавили слова в избранное", color=ft.Colors.GREY_600)]
+        ] if fav_words else [
+            ft.Container(
+                content=ft.Column([
+                    ft.Icon(ft.Icons.FAVORITE_BORDER, size=60, color=ft.Colors.GREY_400),
+                    ft.Text("Вы пока не добавили слова в избранное",
+                            color=ft.Colors.GREY_600, text_align=ft.TextAlign.CENTER),
+                    ft.Text("Открывайте карточки и нажимайте ❤",
+                            color=ft.Colors.GREY_500, size=12, text_align=ft.TextAlign.CENTER),
+                ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                padding=40,
+            )
+        ]
         return ft.View(
             controls=[
                 ft.AppBar(title=ft.Text("Избранное"), bgcolor=ft.Colors.TRANSPARENT,
@@ -755,15 +1305,27 @@ def main(page: ft.Page):
         known_count = len(state.progress["known"])
         total_count = len(all_words_flat())
         streak = state.progress.get("streak", 0)
+        quiz_history = state.progress.get("quiz_history", [])
+        total_quizzes = len(quiz_history)
+        total_correct = sum(q["score"] for q in quiz_history)
+        total_questions = sum(q["total"] for q in quiz_history)
+        accuracy = int(total_correct / total_questions * 100) if total_questions > 0 else 0
 
-        def stat_card(emoji, title, value):
+        def stat_card(emoji, title, value, color):
             return ft.Container(
                 content=ft.ListTile(
-                    leading=ft.Text(emoji, size=30),
+                    leading=ft.Container(
+                        content=ft.Text(emoji, size=26),
+                        width=50, height=50,
+                        alignment=ft.Alignment.CENTER,
+                        bgcolor=ft.Colors.with_opacity(0.2, color),
+                        border_radius=12,
+                    ),
                     title=ft.Text(title, weight=ft.FontWeight.BOLD),
                     subtitle=ft.Text(value)),
                 bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
-                border_radius=15, margin=5
+                border_radius=15, margin=5,
+                border=ft.border.all(1, ft.Colors.with_opacity(0.3, color))
             )
 
         return ft.View(
@@ -772,9 +1334,11 @@ def main(page: ft.Page):
                           leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
                 ft.Container(
                     content=ft.Column([
-                        stat_card("🔥", "Серия дней", f"{streak} дн."),
-                        stat_card("📖", "Изучено", f"{known_count} из {total_count}"),
-                        stat_card("⭐", "Избранное", str(len(state.progress["favorites"]))),
+                        stat_card("🔥", "Серия дней", f"{streak} дн.", ft.Colors.ORANGE_500),
+                        stat_card("📖", "Изучено", f"{known_count} из {total_count}", ft.Colors.BLUE_500),
+                        stat_card("⭐", "Избранное", str(len(state.progress["favorites"])), ft.Colors.PINK_500),
+                        stat_card("🧠", "Пройдено тестов", str(total_quizzes), ft.Colors.DEEP_ORANGE_400),
+                        stat_card("🎯", "Средний результат", f"{accuracy}%", ft.Colors.GREEN_600),
                     ], scroll=ft.ScrollMode.AUTO, expand=True,
                        horizontal_alignment=ft.CrossAxisAlignment.STRETCH),
                     padding=20, expand=True
