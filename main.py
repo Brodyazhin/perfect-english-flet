@@ -62,7 +62,6 @@ FAQ_DATA = {
     ],
 }
 
-# Палитра для кнопок-вариантов в квизе
 OPTION_COLORS = [
     ft.Colors.BLUE_100,
     ft.Colors.PURPLE_100,
@@ -72,7 +71,6 @@ OPTION_COLORS = [
 
 
 def build_quiz(words, count=10):
-    """Строит список вопросов квиза. Нужно минимум 4 слова."""
     if len(words) < 4:
         return []
     all_words = all_words_flat()
@@ -179,7 +177,7 @@ def main(page: ft.Page):
                         border_radius=16,
                     ),
                     bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
-                    border=ft.border.all(2, accent),
+                    border=ft.Border.all(2, accent),          # ← исправлено
                     border_radius=20,
                     margin=ft.Margin(bottom=12),
                     shadow=ft.BoxShadow(blur_radius=15, color=ft.Colors.with_opacity(0.05, ft.Colors.BLACK), offset=ft.Offset(0, 5)),
@@ -212,7 +210,6 @@ def main(page: ft.Page):
                             border_radius=20, margin=ft.Margin(bottom=15),
                             on_click=lambda e: navigate("/subscription")
                         ),
-                        # Карточка ТЕСТЫ
                         ft.Container(
                             content=ft.Row([
                                 ft.Container(
@@ -600,7 +597,7 @@ def main(page: ft.Page):
                             trailing=actions,
                         ),
                         bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
-                        border=ft.border.all(1, ft.Colors.with_opacity(0.3, accent)),
+                        border=ft.Border.all(1, ft.Colors.with_opacity(0.3, accent)),   # ← исправлено
                         border_radius=15, padding=5,
                     )
                 )
@@ -792,7 +789,6 @@ def main(page: ft.Page):
 
     def quiz_select_view():
         cards = []
-        # Случайные со всех слов
         all_words = all_words_flat()
         cards.append(
             ft.Container(
@@ -816,7 +812,6 @@ def main(page: ft.Page):
             )
         )
 
-        # По разделам
         for name, item in DATA.items():
             words = collect_words(item)
             accent = item.get("color", "#7c9cf5")
@@ -838,7 +833,7 @@ def main(page: ft.Page):
                         ft.Icon(ft.Icons.QUIZ, color=accent, size=22),
                     ]),
                     bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
-                    border=ft.border.all(2, accent),
+                    border=ft.Border.all(2, accent),          # ← исправлено
                     padding=15, border_radius=18, margin=ft.Margin(bottom=10),
                     on_click=lambda e, w=words, n=name, ok=has_enough: (
                         start_quiz_by_words(w, n) if ok else None
@@ -934,7 +929,7 @@ def main(page: ft.Page):
                             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                             bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
                             padding=40, border_radius=25,
-                            border=ft.border.all(3, color),
+                            border=ft.Border.all(3, color),          # ← исправлено
                             expand=True,
                         ),
                         ft.Container(height=20),
@@ -1001,7 +996,6 @@ def main(page: ft.Page):
                 ]
             ))
 
-        # Прогресс-бар
         progress = ft.ProgressBar(
             value=(current + 1) / total,
             bgcolor=ft.Colors.GREY_200,
@@ -1009,7 +1003,6 @@ def main(page: ft.Page):
             height=8,
         )
 
-        # Опции
         option_buttons = []
         for i, opt in enumerate(q["options"]):
             base_color = OPTION_COLORS[i]
@@ -1106,7 +1099,7 @@ def main(page: ft.Page):
                             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                             bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
                             padding=30, border_radius=20,
-                            border=ft.border.all(2, ft.Colors.DEEP_ORANGE_200),
+                            border=ft.Border.all(2, ft.Colors.DEEP_ORANGE_200),   # ← исправлено
                             margin=ft.Margin(bottom=20),
                         ),
                         ft.Column(option_buttons, spacing=10),
@@ -1184,7 +1177,7 @@ def main(page: ft.Page):
                     btn
                 ], spacing=8),
                 bgcolor=card_bg, border_radius=20, padding=25, margin=ft.Margin(bottom=15),
-                border=ft.border.all(2, color),
+                border=ft.Border.all(2, color),          # ← исправлено
             )
 
         return ft.View(
@@ -1229,7 +1222,7 @@ def main(page: ft.Page):
                         subtitle=ft.Text(w["ru"])),
                         bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
                         border_radius=15, padding=5,
-                        border=ft.border.all(1, ft.Colors.BLUE_200))
+                        border=ft.Border.all(1, ft.Colors.BLUE_200))   # ← исправлено
                 )
             page.update()
 
@@ -1266,7 +1259,7 @@ def main(page: ft.Page):
                 leading=ft.Icon(ft.Icons.FAVORITE, color=ft.Colors.RED_400, size=20)),
                 bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
                 border_radius=15, padding=5, margin=ft.Margin(bottom=5),
-                border=ft.border.all(1, ft.Colors.PINK_200))
+                border=ft.Border.all(1, ft.Colors.PINK_200))   # ← исправлено
             for w in fav_words
         ] if fav_words else [
             ft.Container(
@@ -1325,7 +1318,7 @@ def main(page: ft.Page):
                     subtitle=ft.Text(value)),
                 bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
                 border_radius=15, margin=5,
-                border=ft.border.all(1, ft.Colors.with_opacity(0.3, color))
+                border=ft.Border.all(1, ft.Colors.with_opacity(0.3, color))   # ← исправлено
             )
 
         return ft.View(
