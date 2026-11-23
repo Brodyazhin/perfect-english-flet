@@ -25,12 +25,14 @@ FAQ_DATA = {
     "📱 Использование приложения": [
         {"q": "Как добавить карточку в избранное?",
          "a": "Откройте карточку и нажмите ❤ в правом верхнем углу. Все избранные карточки доступны в нижней вкладке «Избранное»."},
+        {"q": "Как посмотреть перевод?",
+         "a": "На карточке нажмите кнопку «Показать перевод» — перевод появится прямо под словом. Чтобы скрыть — нажмите «Скрыть»."},
         {"q": "Что значит статус «Изучено»?",
          "a": "Карточка помечается как «Изучено», когда вы нажимаете зелёную кнопку ✓. Такие карточки учитываются в статистике прогресса."},
         {"q": "Что такое серия дней?",
          "a": "🔥 Серия (streak) — это сколько дней подряд вы заходите в приложение. Если пропустите день — серия начнётся заново с 1."},
         {"q": "Что означают типы карточек?",
-         "a": "📖 БУКВА — буква алфавита с примером-ассоциацией\n📝 СЛОВО — отдельное слово\n💬 ФРАЗА — короткое устойчивое выражение\n🗨️ ПРЕДЛОЖЕНИЕ — полное предложение\n🎭 ИДИОМА — устойчивое выражение с переносным смыслом\n🔗 ФРАЗ. ГЛАГОЛ — глагол с предлогом/наречием\n😎 СЛЕНГ — неформальное выражение"},
+         "a": "📖 БУКВА — буква алфавита\n📝 СЛОВО — отдельное слово\n💬 ФРАЗА — короткое выражение\n🗨️ ПРЕДЛОЖЕНИЕ — полное предложение\n🎭 ИДИОМА — выражение с переносным смыслом\n🔗 ФРАЗ. ГЛАГОЛ — глагол с предлогом\n😎 СЛЕНГ — неформальное выражение"},
         {"q": "Работает ли приложение офлайн?",
          "a": "Да! Все карточки хранятся локально. Приложение полностью работает без интернета."},
     ],
@@ -114,7 +116,6 @@ def main(page: ft.Page):
     page.padding = 0
     page.theme = ft.Theme(color_scheme_seed=ft.Colors.BLUE)
 
-    # Считаем streak при старте
     state.record_activity()
 
     chat_messages = [
@@ -273,31 +274,31 @@ def main(page: ft.Page):
             (["тест", "квиз", "quiz", "провер"],
              "🧠 Тесты и квизы доступны двумя способами:\n\n1️⃣ На главной — карточка «Тесты и квизы»\n2️⃣ В любом разделе — иконка 🧠 рядом с подразделом\n\nВ каждом тесте до 10 вопросов: половина en→ru, половина ru→en."),
             (["streak", "серия", "дней"],
-             "🔥 Серия — это сколько дней подряд вы заходите в приложение. Если пропустите день — серия начнётся заново с 1. Проверить можно в разделе «Статистика»."),
+             "🔥 Серия — это сколько дней подряд вы заходите в приложение. Если пропустите день — серия начнётся заново с 1."),
             (["оплат", "купить", "оформ", "подписк", "тариф", "прем", "плюс"],
              "💳 Оформить подписку можно двумя способами:\n\n1️⃣ Голубая карточка тарифа на главном экране\n2️⃣ Раздел «Подписка»\n\nТарифы:\n⭐ Плюс — 199 ₽/мес\n👑 Премиум — 499 ₽/мес\n\n🎟 Промокоды: WELCOME (−10%), STUDENT (−20%), FRIEND (−15%)"),
             (["промокод", "скидк", "акци", "купон"],
-             "🎟 Промокоды:\n• WELCOME — скидка 10%\n• STUDENT — скидка 20%\n• FRIEND — скидка 15%\n\nВводятся в диалоге оплаты при оформлении подписки."),
-            (["баг", "ошибк", "не работает", "глючит", "падает", "вылет", "тормоз"],
+             "🎟 Промокоды:\n• WELCOME — скидка 10%\n• STUDENT — скидка 20%\n• FRIEND — скидка 15%\n\nВводятся в диалоге оплаты."),
+            (["перевод", "перевест", "значен"],
+             "🔍 Нажмите «Показать перевод» под английским словом на карточке — перевод появится прямо в карточке. Нажмите «Скрыть» — спрячется."),
+            (["баг", "ошибк", "не работает", "глючит", "падает", "вылет"],
              "⚠ Приносим извинения!\n\nОпишите, пожалуйста:\n• Что вы делали перед ошибкой?\n• Что произошло?\n• Модель устройства\n\nПередадим в разработку."),
             (["возврат", "вернуть", "отмен", "деньг"],
              "💸 Возврат возможен в течение 14 дней после оплаты.\n\nНапишите на support@perfectenglish.app с датой покупки и названием тарифа."),
-            (["слов", "карточк", "учить", "учиться", "запомина", "зубр"],
-             "📚 Метод интервального повторения:\n\n1️⃣ Учите 10–15 карточек в день\n2️⃣ Возвращайтесь через 1, 3 и 7 дней\n3️⃣ Сложные — в ❤ Избранное\n4️⃣ Проверяйте себя в квизах 🧠\n\nОтмечайте выученное ✓ — работает статистика."),
-            (["транскрипц", "ipa", "произнош", "звук", "акцент"],
-             "🔊 IPA — международный фонетический алфавит.\n\nПример: apple [ˈæp.əl]\n• ˈ — ударение на следующий слог\n• æ — звук «э»\n• ə — безударный «шва»\n\nТренируйте сложные звуки: θ, ð, ŋ, w, r."),
+            (["слов", "карточк", "учить", "учиться", "запомина"],
+             "📚 Метод интервального повторения:\n\n1️⃣ Учите 10–15 карточек в день\n2️⃣ Возвращайтесь через 1, 3 и 7 дней\n3️⃣ Сложные — в ❤ Избранное\n4️⃣ Проверяйте себя в квизах 🧠"),
+            (["транскрипц", "ipa", "произнош", "звук"],
+             "🔊 IPA — международный фонетический алфавит.\n\nПример: apple [ˈæp.əl]\n• ˈ — ударение на следующий слог\n• æ — звук «э»\n• ə — безударный «шва»"),
             (["статистик", "прогресс", "streak", "серия"],
              "📊 «Статистика» — по иконке 📈 в верхней панели.\n\n🔥 серия дней\n📖 изучено карточек\n⭐ избранное\n🧠 результаты квизов"),
             (["избранн", "любим", "сердечк"],
-             "❤ Открывайте карточку и жмите ❤ в правом верхнем углу.\n\nИзбранное — в нижней вкладке «Избранное»."),
+             "❤ Открывайте карточку и жмите ❤ в правом верхнем углу."),
             (["поиск", "найти", "где найти"],
              "🔍 В нижней вкладке «Поиск» введите слово или перевод."),
             (["офлайн", "интернет", "без сети"],
              "📴 Приложение работает полностью офлайн!"),
             (["спасиб", "благодар", "thanks"],
              "😊 Всегда рады помочь! Успехов в изучении английского! 🇬🇧"),
-            (["faq", "вопрос", "част"],
-             "❓ Открывается по кнопке в AppBar или по чипу «FAQ» ниже."),
         ]
         for keywords, response in rules:
             if any(k in t for k in keywords):
@@ -385,7 +386,7 @@ def main(page: ft.Page):
                     make_chip("💳 Подписка", "Как оформить подписку?", ft.Colors.BLUE_400),
                     make_chip("🎟 Промокод", "Какие есть промокоды?", ft.Colors.PURPLE_400),
                     make_chip("💸 Возврат", "Хочу вернуть деньги", ft.Colors.RED_400),
-                    make_chip("🔥 Streak", "Что такое серия дней?", ft.Colors.ORANGE_500),
+                    make_chip("🔍 Перевод", "Как посмотреть перевод?", ft.Colors.INDIGO_400),
                     make_chip("📚 Обучение", "Как эффективнее учить?", ft.Colors.GREEN_600),
                     ft.Chip(label=ft.Text("❓ FAQ", size=12, color=ft.Colors.WHITE),
                             bgcolor=ft.Colors.TEAL_500,
@@ -559,15 +560,6 @@ def main(page: ft.Page):
                 kind = sub_item.get("kind", "word")
                 info = TYPE_INFO.get(kind, TYPE_INFO["word"])
 
-                known_count = sum(1 for w in words if w["en"] in state.progress["known"])
-                total = len(words)
-                if known_count == 0:
-                    progress_text = f"{total} новых"
-                elif known_count == total:
-                    progress_text = "✓ всё изучено"
-                else:
-                    progress_text = f"{known_count} из {total} изучено"
-
                 actions = ft.Row([
                     ft.Container(
                         content=ft.Icon(ft.Icons.STYLE, color=ft.Colors.WHITE, size=20),
@@ -590,9 +582,8 @@ def main(page: ft.Page):
                     ft.Container(
                         content=ft.ListTile(
                             title=ft.Text(sub_name, weight=ft.FontWeight.W_600),
-                            subtitle=ft.Text(
-                                f"{info['emoji']} {info['label']} · {progress_text}",
-                                size=11, color=ft.Colors.GREY_600),
+                            subtitle=ft.Text(f"{info['emoji']} {info['label']}",
+                                             size=11, color=ft.Colors.GREY_600),
                             trailing=actions,
                         ),
                         bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
@@ -623,8 +614,8 @@ def main(page: ft.Page):
             ]
         )
 
-    # --- КАРТОЧКИ ---
-    current_cards_data = {"words": [], "index": 0, "title": ""}
+    # --- КАРТОЧКИ (перевод прямо в карточке) ---
+    current_cards_data = {"words": [], "index": 0, "title": "", "show_translation": False}
 
     def open_flashcards(title, sub_item):
         words = collect_words(sub_item)
@@ -633,7 +624,7 @@ def main(page: ft.Page):
         current_cards_data["words"] = words
         current_cards_data["index"] = 0
         current_cards_data["title"] = title
-        # сохранить "последнее открытое"
+        current_cards_data["show_translation"] = False
         if current_section_data.get("name"):
             state.set_last_opened(current_section_data["name"], title)
         navigate("/flashcards")
@@ -646,6 +637,7 @@ def main(page: ft.Page):
         is_fav = word["en"] in state.progress["favorites"]
         idx = current_cards_data["index"]
         total = len(current_cards_data["words"])
+        show = current_cards_data.get("show_translation", False)
 
         wtype = word.get("type", "word")
         tinfo = TYPE_INFO.get(wtype, TYPE_INFO["word"])
@@ -654,7 +646,6 @@ def main(page: ft.Page):
         font_size = 42 if len(en_word) <= 12 else (32 if len(en_word) <= 20 else 24)
 
         def next_word(e):
-            # лимит для free
             if not state.can_see_more():
                 limit = TIERS[state.license["tier"]]["limit"]
                 tier_name = TIERS[state.license["tier"]]["name"]
@@ -673,11 +664,13 @@ def main(page: ft.Page):
                 return
             state.add_seen()
             current_cards_data["index"] = (idx + 1) % total
+            current_cards_data["show_translation"] = False
             page.views[-1] = flashcards_view()
             page.update()
 
         def prev_word(e):
             current_cards_data["index"] = (idx - 1) % total
+            current_cards_data["show_translation"] = False
             page.views[-1] = flashcards_view()
             page.update()
 
@@ -696,31 +689,33 @@ def main(page: ft.Page):
             page.views[-1] = flashcards_view()
             page.update()
 
-        def shuffle_cards(e):
-            random.shuffle(current_cards_data["words"])
-            current_cards_data["index"] = 0
+        def toggle_translation(e):
+            current_cards_data["show_translation"] = not show
             page.views[-1] = flashcards_view()
             page.update()
 
-        badge_status = "ИЗУЧЕНО" if is_known else "НОВАЯ"
-        badge = ft.Container(
-            content=ft.Row([
-                ft.Text(f"{tinfo['emoji']} {tinfo['label']}", size=11, weight=ft.FontWeight.BOLD,
-                        color=ft.Colors.WHITE),
-                ft.Container(width=1, height=12, bgcolor=ft.Colors.with_opacity(0.4, ft.Colors.WHITE)),
-                ft.Text(badge_status, size=11, weight=ft.FontWeight.BOLD,
-                        color=ft.Colors.WHITE),
-            ], spacing=8, alignment=ft.MainAxisAlignment.CENTER, tight=True),
-            bgcolor=ft.Colors.GREEN_600 if is_known else tinfo["color"],
+        def shuffle_cards(e):
+            random.shuffle(current_cards_data["words"])
+            current_cards_data["index"] = 0
+            current_cards_data["show_translation"] = False
+            page.views[-1] = flashcards_view()
+            page.update()
+
+        # Только тип карточки (без "НОВАЯ"/"ИЗУЧЕНО")
+        type_badge = ft.Container(
+            content=ft.Text(f"{tinfo['emoji']} {tinfo['label']}", size=11,
+                            weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+            bgcolor=tinfo["color"],
             padding=ft.Padding(left=12, right=12, top=6, bottom=6),
             border_radius=15,
             alignment=ft.Alignment.CENTER,
         )
 
         card_items = [
-            badge,
-            ft.Container(height=15),
-            ft.Text(en_word, size=font_size, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER),
+            type_badge,
+            ft.Container(height=20),
+            ft.Text(en_word, size=font_size, weight=ft.FontWeight.BOLD,
+                    text_align=ft.TextAlign.CENTER),
             ft.Text(f"[{word['ipa']}]", size=16, color=ft.Colors.GREY_600,
                     italic=True, text_align=ft.TextAlign.CENTER),
         ]
@@ -737,20 +732,50 @@ def main(page: ft.Page):
                 ),
             ]
 
-        card_items += [
-            ft.Container(height=25),
-            ft.Button(
-                content=ft.Row([ft.Icon(ft.Icons.VISIBILITY, color=ft.Colors.WHITE),
-                                ft.Text("Показать перевод", color=ft.Colors.WHITE)],
-                               alignment=ft.MainAxisAlignment.CENTER, tight=True),
-                bgcolor=ft.Colors.PURPLE_400,
-                on_click=lambda e: page.show_dialog(ft.AlertDialog(
-                    title=ft.Text("Перевод", text_align=ft.TextAlign.CENTER),
-                    content=ft.Text(word["ru"], size=24, text_align=ft.TextAlign.CENTER),
-                    alignment=ft.Alignment.CENTER)),
-                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), padding=20)
+        # Блок перевода прямо в карточке
+        card_items.append(ft.Container(height=20))
+        card_items.append(
+            ft.Container(
+                content=ft.Text("─" * 20, color=ft.Colors.GREY_300,
+                                text_align=ft.TextAlign.CENTER, size=12),
+                margin=ft.Margin(bottom=10),
             )
-        ]
+        )
+
+        if show:
+            translation_block = ft.Container(
+                content=ft.Column([
+                    ft.Text(word["ru"], size=26, weight=ft.FontWeight.BOLD,
+                            color=tinfo["color"], text_align=ft.TextAlign.CENTER),
+                    ft.Container(height=8),
+                    ft.TextButton(
+                        content=ft.Row([
+                            ft.Icon(ft.Icons.VISIBILITY_OFF, size=14, color=ft.Colors.GREY_500),
+                            ft.Text("Скрыть", size=12, color=ft.Colors.GREY_500),
+                        ], alignment=ft.MainAxisAlignment.CENTER, tight=True),
+                        on_click=toggle_translation,
+                    ),
+                ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=0),
+                width=float("inf"),
+            )
+        else:
+            translation_block = ft.Container(
+                content=ft.Button(
+                    content=ft.Row([
+                        ft.Icon(ft.Icons.VISIBILITY, color=ft.Colors.WHITE, size=18),
+                        ft.Text("Показать перевод", color=ft.Colors.WHITE, size=14),
+                    ], alignment=ft.MainAxisAlignment.CENTER, tight=True),
+                    bgcolor=tinfo["color"],
+                    on_click=toggle_translation,
+                    style=ft.ButtonStyle(
+                        shape=ft.RoundedRectangleBorder(radius=12),
+                        padding=ft.Padding(left=20, right=20, top=14, bottom=14),
+                    ),
+                ),
+                width=float("inf"),
+            )
+
+        card_items.append(translation_block)
 
         return ft.View(
             controls=[
@@ -768,12 +793,12 @@ def main(page: ft.Page):
                         ft.IconButton(ft.Icons.SHUFFLE, icon_color=ft.Colors.INDIGO_400,
                                       tooltip="Перемешать", on_click=shuffle_cards),
                         ft.IconButton(ft.Icons.FAVORITE if is_fav else ft.Icons.FAVORITE_BORDER,
-                                      icon_color=ft.Colors.RED if is_fav else ft.Colors.GREY, on_click=toggle_fav),
+                                      icon_color=ft.Colors.RED if is_fav else ft.Colors.GREY,
+                                      on_click=toggle_fav),
                     ]
                 ),
                 ft.Container(
                     content=ft.Column([
-                        # Прогресс-бар по подразделу
                         ft.ProgressBar(
                             value=(idx + 1) / total,
                             height=4,
@@ -782,8 +807,13 @@ def main(page: ft.Page):
                         ),
                         ft.Container(height=10),
                         ft.Container(
-                            content=ft.Column(card_items, horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=4),
-                            bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST, border_radius=30, padding=25,
+                            content=ft.Column(
+                                card_items,
+                                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                spacing=4,
+                            ),
+                            bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
+                            border_radius=30, padding=25,
                             shadow=ft.BoxShadow(blur_radius=30,
                                                 color=ft.Colors.with_opacity(0.1, ft.Colors.BLACK),
                                                 offset=ft.Offset(0, 10)),
@@ -880,7 +910,7 @@ def main(page: ft.Page):
                                      border_radius=15),
                         ft.Column([
                             ft.Text(name, weight=ft.FontWeight.BOLD, size=15),
-                            ft.Text("10 вопросов" if has_enough else "Недостаточно карточек",
+                            ft.Text("Проверить знания" if has_enough else "Недостаточно карточек",
                                     size=12, color=ft.Colors.GREY_600),
                         ], spacing=2, expand=True),
                         ft.Icon(ft.Icons.QUIZ,
@@ -1152,7 +1182,7 @@ def main(page: ft.Page):
             ]
         )
 
-    # --- ПОДПИСКА ---
+    # --- ПОДПИСКА + ОПЛАТА ---
     def open_payment_flow(tier_id, name, price):
         pstate = {"step": "method", "method": None, "promo": None,
                   "discount": 0.0, "error_msg": "", "txn": None}
