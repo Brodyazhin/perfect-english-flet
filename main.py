@@ -55,6 +55,11 @@ TYPE_INFO = {
 
 PROMO_CODES = {"WELCOME": 0.10, "STUDENT": 0.20, "FRIEND": 0.15}
 
+# Нижний отступ для экранов БЕЗ navigation_bar — чтобы системные кнопки Android
+# (3-кнопочная навигация / gesture bar) не перекрывали интерфейс.
+SAFE_BOTTOM_NO_NAV = 80
+SAFE_BOTTOM_NAV = 14
+
 
 def build_quiz(words, count=10):
     if len(words) < 4:
@@ -94,11 +99,11 @@ def main(page: ft.Page):
 
     state.record_activity()
 
-    def wrap(content):
-        """Простая обёртка без SafeArea - только padding."""
+    def wrap(content, bottom=SAFE_BOTTOM_NAV):
+        """Обёртка с отступами. bottom=80 для экранов без navigation_bar."""
         return ft.Container(
             content=content,
-            padding=ft.Padding(left=14, right=14, top=8, bottom=12),
+            padding=ft.Padding(left=14, right=14, top=8, bottom=bottom),
             expand=True,
         )
 
@@ -246,7 +251,7 @@ def main(page: ft.Page):
                                       on_click=toggle_theme)
                     ]
                 ),
-                wrap(body),
+                wrap(body, SAFE_BOTTOM_NAV),
             ],
             navigation_bar=ft.NavigationBar(
                 destinations=[
@@ -392,7 +397,9 @@ def main(page: ft.Page):
                     make_chip("🎟 Промокод", "Какие есть промокоды?", ft.Colors.PURPLE_400),
                     make_chip("💸 Возврат", "Хочу вернуть деньги", ft.Colors.RED_400),
                     make_chip("🔍 Перевод", "Как посмотреть перевод?", ft.Colors.INDIGO_400),
-                    make_chip("❓ FAQ", "faq", ft.Colors.TEAL_500),
+                    ft.Chip(label=ft.Text("❓ FAQ", size=11, color=ft.Colors.WHITE),
+                            bgcolor=ft.Colors.TEAL_500,
+                            on_click=lambda e: navigate("/faq")),
                 ],
                 spacing=8, horizontal=True, height=42,
             ),
@@ -446,7 +453,8 @@ def main(page: ft.Page):
     # --- FAQ ---
     def faq_view():
         expanded = {}
-        faq_list = ft.Column(spacing=6, expand=True,
+        # faq_list без expand=True — скроллится родительский body
+        faq_list = ft.Column(spacing=6,
                              horizontal_alignment=ft.CrossAxisAlignment.STRETCH)
 
         def render_faq():
@@ -505,14 +513,15 @@ def main(page: ft.Page):
             on_click=lambda e: navigate("/support"),
         )
 
-        body = ft.Column([banner, faq_list], expand=True, spacing=0, scroll=ft.ScrollMode.AUTO)
+        body = ft.Column([banner, faq_list], expand=True, spacing=0,
+                         scroll=ft.ScrollMode.AUTO)
 
         return ft.View(
             controls=[
                 ft.AppBar(title=ft.Text("Частые вопросы", weight=ft.FontWeight.BOLD, size=17),
                           bgcolor=ft.Colors.TRANSPARENT,
                           leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/support"))),
-                wrap(body),
+                wrap(body, SAFE_BOTTOM_NAV),
             ],
             navigation_bar=ft.NavigationBar(
                 destinations=[
@@ -561,8 +570,14 @@ def main(page: ft.Page):
         name = current_section_data["name"]
         item = current_section_data["item"]
         accent = item.get("color", "#7c9cf5")
-        subs_list = ft.Column(spacing=8, expand=True,
-                              horizontal_alignment=ft.CrossAxisAlignment.STRETCH)
+
+        # ⭐ ИСПРАВЛЕНО: subs_list теперь со scroll, а не с expand без scroll
+        subs_list = ft.Column(
+            spacing=8,
+            expand=True,
+            scroll=ft.ScrollMode.AUTO,
+            horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
+        )
 
         def render_subs(query=""):
             subs_list.controls.clear()
@@ -572,7 +587,6 @@ def main(page: ft.Page):
                 kind = sub_item.get("kind", "word")
                 info = TYPE_INFO.get(kind, TYPE_INFO["word"])
 
-                # Чистая карточка: только иконка + название + шеврон
                 subs_list.controls.append(
                     ft.Container(
                         content=ft.Row([
@@ -614,13 +628,14 @@ def main(page: ft.Page):
             subs_list,
         ], expand=True, spacing=0)
 
+        # Без navigation_bar → SAFE_BOTTOM_NO_NAV
         return ft.View(
             controls=[
                 ft.AppBar(title=ft.Text(name, weight=ft.FontWeight.BOLD, size=16,
                                         max_lines=1, overflow=ft.TextOverflow.ELLIPSIS),
                           bgcolor=ft.Colors.TRANSPARENT,
                           leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
-                wrap(body),
+                wrap(body, SAFE_BOTTOM_NO_NAV),
             ],
             padding=0, spacing=0
         )
@@ -662,7 +677,7 @@ def main(page: ft.Page):
             if len(words) < 4:
                 page.show_dialog(ft.AlertDialog(
                     title=ft.Text("Мало карточек"),
-                    content=ft.Text(f"Для теста нужно минимум 4 карточки."),
+                    content=ft.Text("Для теста нужно минимум 4 карточки."),
                     actions=[ft.TextButton("Ок", on_click=lambda e: page.pop_dialog())]
                 ))
                 return
@@ -729,7 +744,6 @@ def main(page: ft.Page):
             page.views[-1] = flashcards_view()
             page.update()
 
-        # Содержимое карточки (скроллится)
         card_items = [
             ft.Container(
                 content=ft.Text(f"{tinfo['emoji']} {tinfo['label']}", size=10,
@@ -868,7 +882,8 @@ def main(page: ft.Page):
                                       on_click=toggle_fav),
                     ]
                 ),
-                wrap(main_col),
+                # Без navigation_bar → SAFE_BOTTOM_NO_NAV
+                wrap(main_col, SAFE_BOTTOM_NO_NAV),
             ],
             padding=0, spacing=0
         )
@@ -937,7 +952,7 @@ def main(page: ft.Page):
                 ft.AppBar(title=ft.Text("Тесты", weight=ft.FontWeight.BOLD, size=17),
                           bgcolor=ft.Colors.TRANSPARENT,
                           leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
-                wrap(body),
+                wrap(body, SAFE_BOTTOM_NAV),
             ],
             navigation_bar=ft.NavigationBar(
                 destinations=[
@@ -955,7 +970,7 @@ def main(page: ft.Page):
         if len(words_pool) < 4:
             page.show_dialog(ft.AlertDialog(
                 title=ft.Text("Мало карточек"),
-                content=ft.Text(f"Для теста нужно минимум 4 карточки."),
+                content=ft.Text("Для теста нужно минимум 4 карточки."),
                 actions=[ft.TextButton("Ок", on_click=lambda e: page.pop_dialog())]
             ))
             return
@@ -1042,7 +1057,8 @@ def main(page: ft.Page):
                 ft.AppBar(title=ft.Text("Результат", size=17), bgcolor=ft.Colors.TRANSPARENT,
                           leading=ft.IconButton(ft.Icons.ARROW_BACK,
                                                 on_click=lambda e: navigate("/quiz_select"))),
-                wrap(body),
+                # Без navigation_bar → SAFE_BOTTOM_NO_NAV
+                wrap(body, SAFE_BOTTOM_NO_NAV),
             ],
             padding=0, spacing=0
         )
@@ -1196,7 +1212,8 @@ def main(page: ft.Page):
                                      padding=ft.Padding(left=8, right=14, top=6, bottom=6))
                     ]
                 ),
-                wrap(body),
+                # Без navigation_bar → SAFE_BOTTOM_NO_NAV
+                wrap(body, SAFE_BOTTOM_NO_NAV),
             ],
             padding=0, spacing=0
         )
@@ -1539,15 +1556,21 @@ def main(page: ft.Page):
             controls=[
                 ft.AppBar(title=ft.Text("Подписка", size=17), bgcolor=ft.Colors.TRANSPARENT,
                           leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
-                wrap(body),
+                # Без navigation_bar → SAFE_BOTTOM_NO_NAV
+                wrap(body, SAFE_BOTTOM_NO_NAV),
             ],
             padding=0, spacing=0
         )
 
     # --- ПОИСК / ИЗБРАННОЕ / СТАТИСТИКА ---
     def search_view():
-        results_list = ft.Column(spacing=8, expand=True,
-                                 horizontal_alignment=ft.CrossAxisAlignment.STRETCH)
+        # ⭐ ИСПРАВЛЕНО: results_list теперь со scroll
+        results_list = ft.Column(
+            spacing=8,
+            expand=True,
+            scroll=ft.ScrollMode.AUTO,
+            horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
+        )
 
         def on_search(e):
             results_list.controls.clear()
@@ -1593,7 +1616,7 @@ def main(page: ft.Page):
             controls=[
                 ft.AppBar(title=ft.Text("Поиск", size=17), bgcolor=ft.Colors.TRANSPARENT,
                           leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
-                wrap(body),
+                wrap(body, SAFE_BOTTOM_NAV),
             ],
             navigation_bar=ft.NavigationBar(
                 destinations=[
@@ -1642,7 +1665,7 @@ def main(page: ft.Page):
             controls=[
                 ft.AppBar(title=ft.Text("Избранное", size=17), bgcolor=ft.Colors.TRANSPARENT,
                           leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
-                wrap(body),
+                wrap(body, SAFE_BOTTOM_NAV),
             ],
             navigation_bar=ft.NavigationBar(
                 destinations=[
@@ -1694,7 +1717,7 @@ def main(page: ft.Page):
             controls=[
                 ft.AppBar(title=ft.Text("Статистика", size=17), bgcolor=ft.Colors.TRANSPARENT,
                           leading=ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: navigate("/"))),
-                wrap(body),
+                wrap(body, SAFE_BOTTOM_NAV),
             ],
             navigation_bar=ft.NavigationBar(
                 destinations=[
